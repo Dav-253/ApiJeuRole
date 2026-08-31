@@ -2,6 +2,7 @@ package Lobby;
 
 import Hero.Hero;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -10,10 +11,13 @@ public class Lobby {
     private UUID lobbyID;
     private String lobbyName;
 
+    private EtatLobby etatLobby;
+
     private ArrayList<Joeur> joeursActif;
     private int max_joeur;
 
     public Lobby() {
+        this.etatLobby = EtatLobby.LOBBY;
         this.max_joeur = 4;
         this.joeursActif = new ArrayList<>();
     }
@@ -50,5 +54,29 @@ public class Lobby {
             }
         }
     }
+
+    public void startJeux() {
+        if (this.etatLobby == EtatLobby.ACTIVE) {
+            System.out.println("Une partie est deja active");
+            return;
+        }
+
+        for (Joeur joeur : joeursActif) {
+            if (!joeur.isReady()) {
+                System.out.println("Impossible de commencer la partie (Des joeurs ne sont pas pret)");
+                return;
+            }
+        }
+
+        if (this.etatLobby == EtatLobby.LOBBY || this.etatLobby == EtatLobby.STARTING) {
+            this.etatLobby = EtatLobby.ACTIVE;
+            // Logice lorsque la partie commence
+        }
+
+    }
+
+    // Fonction pour finir la partie
+
+
 
 }

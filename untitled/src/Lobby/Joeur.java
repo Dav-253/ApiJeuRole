@@ -12,8 +12,14 @@ public class Joeur {
     private Hero hero;
 
 
+
+
     public UUID getId() {
         return id;
+    }
+
+    public boolean isReady() {
+        return isReady;
     }
 
     public Hero getHero() {
