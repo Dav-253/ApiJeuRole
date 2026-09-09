@@ -1,29 +1,39 @@
 package Lobby;
 
-import Hero.Hero;
-
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.UUID;
 
 public class Lobby {
 
     private UUID lobbyID;
-    private String lobbyName;
 
     private EtatLobby etatLobby;
 
     private ArrayList<Joeur> joeursActif;
-    private int max_joeur;
+    private final int max_joeurs;
 
     public Lobby() {
+        this.lobbyID = UUID.randomUUID();
+
         this.etatLobby = EtatLobby.LOBBY;
-        this.max_joeur = 4;
+        this.max_joeurs = 4;
         this.joeursActif = new ArrayList<>();
     }
 
+    public UUID getLobbyID() {
+        return lobbyID;
+    }
+
+    public boolean lobbyEstPlein() {
+        return joeursActif.size() >= max_joeurs;
+    }
+
+    public EtatLobby getEtatLobby() {
+        return etatLobby;
+    }
+
     public void ajoutJoueur(Joeur nouvJoeur) {
-        if (joeursActif.size() >= max_joeur) {
+        if (lobbyEstPlein()) {
             System.out.println("Le nombre de joeur max dans le lobby est atteint");
             //throw new
             return;
