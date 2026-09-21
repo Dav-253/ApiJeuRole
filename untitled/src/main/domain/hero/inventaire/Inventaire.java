@@ -40,7 +40,7 @@ public class Inventaire {
     }
 
     public boolean isInventairePlein() {
-        return inventaire.size() >= capaciteMax;
+        return inventaire.size() >= CAPACITE_MAX;
     }
 
     public int getNombreObjets() {
