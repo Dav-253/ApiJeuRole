@@ -12,6 +12,7 @@ import main.domain.hero.inventaire.*;
 import main.erreur.exception.EquipementInvalideException;
 import main.erreur.exception.ObjetNonPossedeException;
 
+import java.util.AbstractMap;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -37,7 +38,7 @@ public class Hero {
 
     public Hero(UUID proprietaireId, Nom nom, Espece espece,
                 ClasseHero classeHero, Caracteristiques caracteristiques,
-                Niveau niveau, PointVie pvHero, PointMagie pmHero) {
+                Niveau niveau, PointVie pvHero, PointMagie pmHero, Arme armeEquipee) {
         this.id = UUID.randomUUID();
         this.proprietaireId = Objects.requireNonNull(proprietaireId, "Le propriétaire est obligatoire.");
         this.nom = Objects.requireNonNull(nom, "Le nom est obligatoire.");
@@ -47,6 +48,15 @@ public class Hero {
         this.pvHero = Objects.requireNonNull(pvHero, "Les PV sont obligatoires.");
         this.pmHero = Objects.requireNonNull(pmHero, "Les PM sont obligatoires.");
         this.niveau = new Niveau();
+
+
+        this.armeEquipee = Objects.requireNonNull(armeEquipee, "L'arme équipée est obligatoire.");
+
+        //TODO: Check si null ou pas (progres qui load)
+        this.armureEquipee = (armureEquipee == null)
+                ? new Armure(TypeArmure.AUCUNE)
+                : armureEquipee;
+
     }
 
 
@@ -100,7 +110,9 @@ public class Hero {
     public void guerrir(int quantite) { pvHero.guerrir(quantite); }
 
     /** @return true si la dépense de magie a pu être faite, false si le héros n'a pas assez de PM. */
-    public boolean depenserMagie(int quantite) { return pmHero.depenser(quantite); }
+    public boolean depenserMagie(int quantite) {
+        return pmHero.depenser(quantite);
+    }
 
 
 
@@ -126,7 +138,7 @@ public class Hero {
         if (!inventaire.possedeObjet(arme)) {
             throw new ObjetNonPossedeException("Le héros ne possède pas cette arme.");
         }
-        if (!classeHero.peutUtiliser(arme.getType())) {
+        if (!classeHero.peutUtiliser(arme.getTypeArme())) {
             throw new EquipementInvalideException(
                     "La classe " + classeHero.getNom() + " ne peut pas utiliser : " + arme.getNom());
         }
@@ -151,8 +163,7 @@ public class Hero {
 
     public int getClasseArmure() {
         int modDex = getModificateur(TypeCaracteristique.DEXTERITE);
-        Armure typeEquipe = (armureEquipee == null) ? null : armureEquipee.getType();
-        return TypeArmure.calculerCA(typeEquipe, modDex);
+        return armureEquipee.calculerClasseArmure(modDex);
     }
 
     public int utiliserPotion(Potion potion) {

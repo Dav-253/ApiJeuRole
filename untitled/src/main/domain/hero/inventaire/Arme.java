@@ -3,31 +3,35 @@ package main.domain.hero.inventaire;
 import main.domain.hero.caracteristique.TypeCaracteristique;
 import main.domain.hero.inventaire.item.Item;
 
+import java.util.Objects;
+
 public class Arme implements Item {
 
-    private String nom;
-    private int nombreDes;
-    private int faceDe;
-    private TypeCaracteristique caracteristique;
+    private final TypeArme typeArme;
 
-    public Arme(String nom, int nombreDes, int faceDe, TypeCaracteristique caracteristique) {
-        this.nom = nom;
-        this.nombreDes = nombreDes;
-        this.faceDe = faceDe;
-        this.caracteristique = caracteristique;
+    public Arme(TypeArme typeArme) {
+        this.typeArme = Objects.requireNonNull(typeArme, "Le type d'arme est obligatoire.");
     }
 
     @Override
     public String getNom() {
-        return nom;
+        return typeArme.getNom();
     }
 
-    public int getNombreDes() { return nombreDes; }
+    public TypeArme getTypeArme() {
+        return typeArme;
+    }
 
-    public int getFaceDe() { return faceDe; }
+    public int getNombreDes() {
+        return typeArme.getNombreDes();
+    }
+
+    public int getFaceDe() {
+        return typeArme.getFaceDe();
+    }
 
     public TypeCaracteristique getCaracteristique() {
-        return caracteristique;
+        return typeArme.getCaracteristique();
     }
 
 }

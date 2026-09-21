@@ -3,33 +3,35 @@ package main.domain.hero.inventaire;
 import main.domain.hero.caracteristique.TypeCaracteristique;
 import main.domain.hero.inventaire.item.Item;
 
-public class Armure implements Item {
-    private final String nom;
-    private final int protectionDeBase;
-    private final boolean bonusDexteriteApplicable;
+import java.util.Objects;
 
-    public Armure(String nom, int protectionDeBase, boolean bonusDexteriteApplicable) {
-        this.nom = nom;
-        this.protectionDeBase = protectionDeBase;
-        this.bonusDexteriteApplicable = bonusDexteriteApplicable;
+public class Armure implements Item {
+
+    private final TypeArmure typeArmure;
+
+    public Armure(TypeArmure typeArmure) {
+        this.typeArmure = Objects.requireNonNull(typeArmure, "Le type d'armure est obligatoire.");
     }
 
     @Override
     public String getNom() {
-        return nom;
+        return typeArmure.getNom();
     }
 
-    public int getProtectionDeBase() { return protectionDeBase; }
+    public TypeArmure getType() {
+        return typeArmure;
+    }
 
-    public boolean isBonusDexteriteApplicable() { return bonusDexteriteApplicable; }
+    public boolean isBonusDexteriteApplicable() {
+        return getType().getBonusDexteriteApplicable();
+    }
 
-    public int calculerClasseArmure(TypeArmure armure, int modificateurDexterite) {
-        if (armure == null) {
-            return 10 + modificateurDexterite;
-        }
-        return bonusDexteriteApplicable
-                ? protectionDeBase + modificateurDexterite
-                : protectionDeBase;
+    public int getProtectionDeBase() {
+        return getType().getProtectionDeBase();
+    }
+
+    public int calculerClasseArmure(int modificateurDexterite) {
+        return typeArmure.calculerClasseArmure(modificateurDexterite);
     }
 
 }
