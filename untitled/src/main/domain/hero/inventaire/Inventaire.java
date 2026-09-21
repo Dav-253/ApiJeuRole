@@ -2,13 +2,15 @@ package main.domain.hero.inventaire;
 
 
 import main.domain.hero.inventaire.item.Item;
+import main.erreur.exception.InventairePleinException;
+import main.erreur.exception.ObjetNonPossedeException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Inventaire {
 
-    private final int capaciteMax = 10;
+    private static final int CAPACITE_MAX = 10;
     private List<Item> inventaire = new ArrayList<>();
 
 
@@ -18,10 +20,8 @@ public class Inventaire {
             System.out.println("L'item est obligatoire.");
         }
 
-
         if (isInventairePlein()) {
-            System.out.println("Impossible d'ajouter un objet : l'inventaire est plein (maximum " + capaciteMax + ").");
-            return;
+            throw new InventairePleinException("Impossible d'ajouter un objet : l'inventaire est plein (maximum " + CAPACITE_MAX + ").");
         }
 
         inventaire.add(item);
@@ -30,8 +30,7 @@ public class Inventaire {
 
     public void retirerItem(Item item) {
         if (!inventaire.remove(item)) {
-            System.out.println("Cet objet n'est pas dans l'inventaire.");
-            return;
+            throw new ObjetNonPossedeException("Cet objet n'est pas dans l'inventaire.");
         }
     }
 
@@ -49,7 +48,7 @@ public class Inventaire {
     }
 
     public int getCapaciteMax() {
-        return capaciteMax;
+        return CAPACITE_MAX;
     }
 
     public List<Item> getInventaire() {

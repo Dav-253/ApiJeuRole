@@ -1,30 +1,35 @@
 package main.domain.hero.inventaire;
 
-import hero.caracteristique.TypeCaracteristique;
-import hero.inventaire.item.Item;
+import main.domain.hero.caracteristique.TypeCaracteristique;
+import main.domain.hero.inventaire.item.Item;
 
 public class Armure implements Item {
     private final String nom;
-    private final String degat;
-    private final TypeCaracteristique caracteristique;
+    private final int protectionDeBase;
+    private final boolean bonusDexteriteApplicable;
 
-    public Armure(String nom, String degat, TypeCaracteristique caracteristique) {
+    public Armure(String nom, int protectionDeBase, boolean bonusDexteriteApplicable) {
         this.nom = nom;
-        this.degat = degat;
-        this.caracteristique = caracteristique;
+        this.protectionDeBase = protectionDeBase;
+        this.bonusDexteriteApplicable = bonusDexteriteApplicable;
     }
-
 
     @Override
     public String getNom() {
         return nom;
     }
 
-    public String getDegat() {
-        return degat;
+    public int getProtectionDeBase() { return protectionDeBase; }
+
+    public boolean isBonusDexteriteApplicable() { return bonusDexteriteApplicable; }
+
+    public int calculerClasseArmure(TypeArmure armure, int modificateurDexterite) {
+        if (armure == null) {
+            return 10 + modificateurDexterite;
+        }
+        return bonusDexteriteApplicable
+                ? protectionDeBase + modificateurDexterite
+                : protectionDeBase;
     }
 
-    public TypeCaracteristique getCaracteristique() {
-        return caracteristique;
-    }
 }

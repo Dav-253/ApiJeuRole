@@ -20,7 +20,7 @@ public class Caracteristiques {
         this.caracteristiques.putAll(valeurs);
     }
 
-    
+
     public Caracteristiques appliquerBonusEspece(Espece espece) {
         Map<TypeCaracteristique, Integer> bonus = espece.getModificateursEspece();
         Map<TypeCaracteristique, ValeurCaracteristique> resultat = new EnumMap<>(TypeCaracteristique.class);

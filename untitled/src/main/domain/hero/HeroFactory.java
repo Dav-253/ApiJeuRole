@@ -10,11 +10,16 @@ import java.util.UUID;
 
 public class HeroFactory {
 
-    public static Hero creerHero(UUID id, String nomBrut, Espece espece, ClasseHero classeHero, Map<TypeCaracteristique, Integer> map) {
+    private HeroFactory() {}
+
+    public static Hero creerHero(UUID id, String nomBrut,
+                                 Espece espece, ClasseHero classeHero,
+                                 Map<TypeCaracteristique, Integer> valeursBrutes) {
 
         Nom nom = new Nom(nomBrut);
 
 
+        Map<TypeCaracteristique, ValeurCaracteristique> valeurs = new EnumMap<>(TypeCaracteristique.class);
 
 
         return new Hero(id, nom, espece, classeHero, )

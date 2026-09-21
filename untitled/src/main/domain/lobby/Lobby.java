@@ -1,4 +1,4 @@
-package Lobby;
+package main.domain.lobby;
 
 import main.domain.joueur.Joeur;
 
@@ -37,20 +37,17 @@ public class Lobby {
     public void ajoutJoueur(Joeur nouvJoeur) {
         if (nouvJoeur == null) {
             throw new IllegalStateException("Joueur invalide");
-            return;
         }
 
         LobbyEstOuvert();
 
         if (lobbyEstPlein()) {
             throw new IllegalStateException("Le main.domain.lobby est plein. Joueurs maximum: " + max_joeurs);
-            return;
         }
 
         // Verifier si le main.domain.joueur est deja present
         if (joueurDejaPresent(nouvJoeur.getId())) {
             throw new IllegalStateException("Ce main.domain.joueur est déjà présent dans le main.domain.lobby");
-            return;
         }
 
         joeursActif.put(nouvJoeur.getId(), nouvJoeur);

@@ -1,4 +1,4 @@
-package Lobby;
+package main.domain.lobby;
 
 public enum EtatLobby {
     LOBBY,

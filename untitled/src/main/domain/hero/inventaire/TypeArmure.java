@@ -28,14 +28,4 @@ public enum TypeArmure {
     }
 
 
-    public static int calculerClasseArmure(TypeArmure armure, int modificateurDexterite) {
-        if (armure == null) {
-            return 10 + modificateurDexterite;
-        }
-        return armure.bonusDexteriteApplicable
-                ? armure.protectionBase + modificateurDexterite
-                : armure.protectionBase;
-    }
-
-
 }

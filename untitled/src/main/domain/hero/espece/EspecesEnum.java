@@ -1,6 +1,6 @@
 package main.domain.hero.espece;
 
-import hero.caracteristique.TypeCaracteristique;
+import main.domain.hero.caracteristique.TypeCaracteristique;
 
 import java.util.Collections;
 import java.util.EnumMap;

@@ -1,6 +1,6 @@
 package main.domain.joueur;
 
-import Hero.Hero;
+import main.domain.hero.Hero;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,6 @@ import java.util.UUID;
 public class Joeur {
 
     private UUID id;
-    private NomJoueur nom;
     private boolean isReady;
 
     private final List<Hero> herosCreer = new ArrayList<>();
