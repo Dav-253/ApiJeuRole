@@ -1,19 +1,24 @@
 package main.domain.lobby;
 
+import main.domain.hero.Hero;
 import main.domain.joueur.Joeur;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Lobby {
 
     private UUID lobbyID;
 
     private final Map<UUID, Joeur> joeursActif = new HashMap<>();
-    private final int max_joeurs;
+    private final Map<UUID, Boolean> statusPret = new ConcurrentHashMap<>();
+
 
     private EtatLobby etatLobby;
+
+    private final int max_joeurs;
 
     public Lobby(UUID id) {
         this.lobbyID = id;
@@ -34,75 +39,66 @@ public class Lobby {
         return etatLobby;
     }
 
-    public void ajoutJoueur(Joeur nouvJoeur) {
-        if (nouvJoeur == null) {
-            throw new IllegalStateException("Joueur invalide");
+
+    public void rejoindreLobby(Joeur joeur) {
+        if (joeur.getId() == null || joeur.getHeroSelectionner() == null) {
+            throw new IllegalArgumentException("Informations du joueur ou du héros invalides");
         }
 
-        LobbyEstOuvert();
+        verifierLobbyEstOuvert();
 
         if (lobbyEstPlein()) {
-            throw new IllegalStateException("Le main.domain.lobby est plein. Joueurs maximum: " + max_joeurs);
+            throw new IllegalStateException("Le lobby est plein. Maximum de " + max_joeurs + " joueurs.");
         }
 
-        // Verifier si le main.domain.joueur est deja present
-        if (joueurDejaPresent(nouvJoeur.getId())) {
+        if (joueurDejaPresent(joeur.getId())) {
             throw new IllegalStateException("Ce main.domain.joueur est déjà présent dans le main.domain.lobby");
         }
 
-        joeursActif.put(nouvJoeur.getId(), nouvJoeur);
+        joeursActif.put(joeur.getId(), joeur);
         System.out.println("Nouvaux main.domain.joueur ajouté");
     }
 
-    public void enleveJoueur(UUID idJoueurEnleve) {
+    public void quitterLobby(Joeur joeur) {
+        if (joeur.getId() == null) return;
+        verifierLobbyEstOuvert();
+
+        joeursActif.remove(joeur);
+        statusPret.remove(joeur.getId());
+    }
+
+    public void modifierStatusPret(UUID joueurId, boolean estPret) {
+        if (!joeursActif.containsKey(joueurId)) {
+            throw new IllegalStateException("Le joueur n'est pas présent dans ce lobby.");
+        }
+
+        verifierLobbyEstOuvert();
+        statusPret.put(joueurId, estPret);
+    }
+
+    public void lancerLaPartie() {
+        verifierLobbyEstOuvert();
+
         if (joeursActif.isEmpty()) {
-            System.out.println("Il n'y a pas de joeurs qui peut etre enlever");
-            //throw new
-            return;
+            throw new IllegalStateException("Impossible de lancer une partie sans héros.");
         }
 
-        for (Joeur joeur : joeursActif) {
-            if (joeur.getId().equals(idJoueurEnleve)) {
-                joeursActif.remove(joeur);
-                System.out.println("Le main.domain.joueur a été enlevé du main.domain.lobby");
-                return;
-            } else {
-                System.out.println("Aucun joeur correspondant");
-                //throw new
-                return;
-            }
-        }
-    }
-
-    public void startJeux() {
-        if (this.etatLobby == EtatLobby.ACTIVE) {
-            System.out.println("Une partie est deja active");
-            return;
-        }
-
-        for (Joeur joeur : joeursActif.values()) {
-            if (!joeur.isReady()) {
-                System.out.println("Impossible de commencer la partie (Des joeurs ne sont pas pret)");
-                return;
+        for (Map.Entry<UUID, Boolean> entry : statusPret.entrySet()) {
+            if (!entry.getValue()) {
+                throw new IllegalStateException("Impossible de commencer: tous les joueurs ne sont pas prêts.");
             }
         }
 
-        if (this.etatLobby == EtatLobby.LOBBY || this.etatLobby == EtatLobby.STARTING) {
-            this.etatLobby = EtatLobby.ACTIVE;
-            // Logice lorsque la partie commence
-        }
 
+        this.etatLobby = EtatLobby.ACTIVE;
     }
 
-    // Fonction pour finir la partie
-
-
-    private void LobbyEstOuvert() {
-        if (etatLobby != EtatLobby.LOBBY) {
-            throw new IllegalStateException(
-                    "Lobby is no longer accepting changes."
-            );
+    private void verifierLobbyEstOuvert() {
+        if (this.etatLobby != EtatLobby.LOBBY) {
+            throw new IllegalStateException("Le lobby n'est plus ouvert aux modifications (Partie lancée ou en cours).");
         }
+
+
     }
 
     private boolean joueurDejaPresent(UUID idJoueur) {

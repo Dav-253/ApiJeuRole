@@ -1,6 +1,7 @@
 package main.domain.joueur;
 
 import main.domain.hero.Hero;
+import main.domain.hero.autre.Nom;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,31 +9,28 @@ import java.util.UUID;
 
 public class Joeur {
 
-    private UUID id;
-    private boolean isReady;
-
+    private final UUID id;
     private final List<Hero> herosCreer = new ArrayList<>();
     private Hero heroSelectionner;
 
-    public Joeur(UUID id, NomJoueur nom) {
+    public Joeur(UUID id) {
         this.id = id;
-        this.nom = nom;
     }
 
     public UUID getId() {
         return id;
     }
 
-    public String getNom() {
-        return nom.getValue();
-    }
-
-    public boolean isReady() {
-        return isReady;
-    }
-
     public Hero getHeroSelectionner() {
         return heroSelectionner;
+    }
+
+    public void setHeroSelectionner(Hero heroSelectionner) {
+        this.heroSelectionner = heroSelectionner;
+    }
+
+    public List<Hero> getHerosCreer() {
+        return herosCreer;
     }
 
 }
