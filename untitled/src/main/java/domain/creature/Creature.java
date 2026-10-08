@@ -1,8 +1,11 @@
 package domain.creature;
 
-import main.domain.hero.autre.Nom;
-import main.domain.hero.autre.PointVie;
-import main.erreur.exception.PvInvalidException;
+import domain.hero.Hero;
+import java.util.List;
+import java.util.Objects;
+import domain.hero.autre.Nom;
+import domain.hero.autre.PointVie;
+import erreur.exception.PvInvalidException;
 
 public class Creature {
 
@@ -16,9 +19,11 @@ public class Creature {
     private final int nbDesDegats;
     private final int nbFacesDegats;
     private final int degatsFixe;
+    private final ComportementCiblage comportementCiblage;
 
     public Creature(String nomBrut, int pvMax, int classeArmure, int bonusInitiative, int xp,
-                     int attaqueBonus, int nbDesDegats, int nbFacesDegats, int degatsFixe) {
+        int attaqueBonus, int nbDesDegats, int nbFacesDegats, int degatsFixe,
+            ComportementCiblage comportementCiblage) {
 
         this.nom = new Nom(nomBrut);
         this.pointVie = new PointVie(pvMax, pvMax);
@@ -40,6 +45,8 @@ public class Creature {
         this.nbDesDegats = nbDesDegats;
         this.nbFacesDegats = nbFacesDegats;
         this.degatsFixe = degatsFixe;
+        this.comportementCiblage = Objects.requireNonNull(comportementCiblage,
+        "Le comportement de ciblage est obligatoire.");
     }
 
     public String getNom() {
@@ -68,5 +75,8 @@ public class Creature {
 
     public void subirDegat(int quantite) {
         pointVie.subirDegat(quantite);
+    }
+        public Hero choisirCible(List<Hero> herosActifs) {
+        return comportementCiblage.choisirCible(herosActifs);
     }
 }
