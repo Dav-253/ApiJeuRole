@@ -1,31 +1,33 @@
 package lobby.application;
 
+
 import domain.heros.Heros;
-import domain.joueur.Joeur;
-import domain.joueur.JoeurRepository;
-import domain.lobby.Lobby;
-import domain.lobby.LobbyRepository;
+import lobby.domain.Lobby;
+import lobby.domain.LobbyRepository;
 
 import java.util.Collection;
 import java.util.UUID;
 
-
+/**
+ * TEMPORAIRE — à découper à l'étape 4 en un use case par intention
+ * ({@code CreerLobbyUseCase}, {@code RejoindreLobbyUseCase}, {@code QuitterLobbyUseCase}…),
+ * chacun avec sa Command et son Output, comme dans l'exemple du prof.
+ *
+ * <p>Il reçoit encore un {@link domain.heros.Heros} du domaine : le use case recevra plutôt un identifiant de
+ * héros et ira chercher le héros via un gateway du module héros.
+ */
 public class LobbyService {
 
-    // Dedicated repository layer to mimic database operations.
     private final LobbyRepository lobbyRepository;
-    private final JoeurRepository joeurRepository;
+    private final JoueurRepository joueurRepository;
 
-    public LobbyService(LobbyRepository lobbyRepository, JoeurRepository joeurRepository) {
+    public LobbyService(LobbyRepository lobbyRepository, JoueurRepository joueurRepository) {
         this.lobbyRepository = lobbyRepository;
-        this.joeurRepository = joeurRepository;
+        this.joueurRepository = joueurRepository;
     }
 
     public Lobby createLobby() {
-        UUID newId = UUID.randomUUID();
-
-        Lobby lobby = new Lobby(newId);
-
+        Lobby lobby = new Lobby(UUID.randomUUID());
         lobbyRepository.save(lobby);
         return lobby;
     }
@@ -35,48 +37,38 @@ public class LobbyService {
     }
 
     public Lobby getLobby(UUID lobbyId) {
-        return lobbyRepository.findById(lobbyId)
-                .orElseThrow(() -> new IllegalArgumentException("Lobby introuvable avec l'ID: " + lobbyId));
+        return lobbyRepository.fetchById(lobbyId);
     }
 
     public void joinLobbyWorkflow(UUID lobbyId, UUID joueurId, Heros herosSelectionne) {
-        Lobby lobby = getLobby(lobbyId);
+        Lobby lobby = lobbyRepository.fetchById(lobbyId);
+        joueurRepository.fetchById(joueurId); // 404 si le joueur n'existe pas
 
-        Joeur joueur = joeurRepository.findById(joueurId)
-                .orElseThrow(() -> new IllegalArgumentException("Joueur introuvable avec l'ID: " + joueurId));
-
-        joueur.setHerosSelectionner(herosSelectionne);
-
-        lobby.rejoindreLobby(joueur);
+        lobby.rejoindreLobby(joueurId, herosSelectionne);
         lobbyRepository.save(lobby);
     }
 
     public void leaveLobbyWorkflow(UUID lobbyId, UUID joueurId) {
-        Lobby lobby = getLobby(lobbyId);
+        Lobby lobby = lobbyRepository.fetchById(lobbyId);
+        joueurRepository.fetchById(joueurId);
 
-        Joeur joeur = joeurRepository.findById(joueurId)
-                .orElseThrow(() -> new IllegalArgumentException("Joueur introuvable avec l'ID: " + joueurId));
-
-        lobby.quitterLobby(joeur);
+        lobby.quitterLobby(joueurId);
         lobbyRepository.save(lobby);
     }
 
-
     public void toggleReadyWorkflow(UUID lobbyId, UUID joueurId, boolean estPret) {
-        Lobby lobby = getLobby(lobbyId);
+        Lobby lobby = lobbyRepository.fetchById(lobbyId);
 
         lobby.modifierStatusPret(joueurId, estPret);
-
         lobbyRepository.save(lobby);
     }
 
     public void startMatchWorkflow(UUID lobbyId) {
-        Lobby lobby = getLobby(lobbyId);
+        Lobby lobby = lobbyRepository.fetchById(lobbyId);
 
-        // Valide si tout le monde est prêt
         lobby.lancerLaPartie();
         lobbyRepository.save(lobby);
 
-        // NEXT STEP: Hand off lobby.getSelectionsHeros().values() over to the new Partie domain engine!
+        // TODO étape 4 : passer lobby.getSelectionsHeros().values() à la nouvelle Partie.
     }
 }

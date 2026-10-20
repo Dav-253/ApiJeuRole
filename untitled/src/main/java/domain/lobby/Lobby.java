@@ -27,7 +27,7 @@ public class Lobby {
         this.max_joeurs = 4;
     }
 
-    public UUID getLobbyID() {
+    public UUID getId() {
         return lobbyID;
     }
 

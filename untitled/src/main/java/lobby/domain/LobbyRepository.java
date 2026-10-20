@@ -1,12 +1,13 @@
 package lobby.domain;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface LobbyRepository {
     void save(Lobby lobby);
-    Optional<Lobby> findById(UUID id);
-    Collection<Lobby> findAll();
-    void deleteById(UUID id);
+
+    /** @throws lobby.domain.exception.LobbyIntrouvableException si le lobby n'existe pas */
+    Lobby fetchById(UUID id);
+
+    Collection<Lobby> findALl();
 }

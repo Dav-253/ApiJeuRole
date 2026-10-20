@@ -2,35 +2,35 @@ package lobby.infrastructure;
 
 import domain.lobby.Lobby;
 import domain.lobby.LobbyRepository;
+import lobby.domain.exception.LobbyIntrouvableException;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-
+/** TODO : stocker un modèle de persistance + mapper plutôt que l'objet du domaine directement. */
 public class InMemoryLobbyRepository implements LobbyRepository {
 
-    private final Map<UUID, Lobby> dbSimulator = new ConcurrentHashMap<>();
+    private final Map<UUID, Lobby> lobbys = new ConcurrentHashMap<>();
 
     @Override
     public void save(Lobby lobby) {
-        dbSimulator.put(lobby.getLobbyID(), lobby);
+        lobbys.put(lobby.getId(), lobby);
     }
 
     @Override
-    public Optional<Lobby> findById(UUID id) {
-        return Optional.ofNullable(dbSimulator.get(id));
+    public Lobby fetchById(UUID id) {
+        Lobby lobby = lobbys.get(id);
+        if (lobby == null) {
+            throw new LobbyIntrouvableException(id);
+        }
+        return lobby;
     }
 
     @Override
     public Collection<Lobby> findAll() {
-        return dbSimulator.values();
-    }
-
-    @Override
-    public void deleteById(UUID id) {
-        dbSimulator.remove(id);
+        return List.copyOf(lobbys.values());
     }
 }
