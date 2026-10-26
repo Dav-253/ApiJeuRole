@@ -1,11 +1,11 @@
 package partie.infrastructure;
 
+import partie.domain.EtatPartie;
 import partie.domain.Partie;
 import partie.domain.PartieRepository;
 import partie.domain.exception.PartieIntrouvableException;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryPartieRepository implements PartieRepository {
@@ -27,5 +27,22 @@ public class InMemoryPartieRepository implements PartieRepository {
             throw new PartieIntrouvableException(id);
         }
         return persistenceMapper.toDomain(model);
+    }
+
+    @Override
+    public Set<UUID> herosDejaEnPartieEnCours(Collection<UUID> herosIds) {
+        Set<String> recherches = new HashSet<>();
+        herosIds.forEach(id -> recherches.add(id.toString()));
+
+        Set<UUID> trouves = new HashSet<>();
+        for (PartiePersistenceModel model : parties.values()) {
+            if (EtatPartie.TERMINEE.name().equals(model.etat())) continue;
+            for (PartiePersistenceModel.MembreModel membre : model.groupe()) {
+                if (recherches.contains(membre.herosId())) {
+                    trouves.add(UUID.fromString(membre.herosId()));
+                }
+            }
+        }
+        return trouves;
     }
 }
