@@ -1,4 +1,4 @@
-package api.dto;
+package lobby.api.dto;
 
 import java.util.List;
 import java.util.UUID;
