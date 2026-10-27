@@ -9,5 +9,5 @@ public interface LobbyRepository {
     /** @throws lobby.domain.exception.LobbyIntrouvableException si le lobby n'existe pas */
     Lobby fetchById(UUID id);
 
-    Collection<Lobby> findALl();
+    Collection<Lobby> findAll();
 }

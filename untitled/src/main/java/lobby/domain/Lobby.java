@@ -2,10 +2,7 @@ package lobby.domain;
 
 import domain.heros.Heros;
 import domain.joueur.Joeur;
-import lobby.domain.exception.HerosNonAutoriseException;
-import lobby.domain.exception.JoueurDejaPresentException;
-import lobby.domain.exception.LobbyPleinException;
-import lobby.domain.exception.LobbyVideException;
+import lobby.domain.exception.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,7 +12,7 @@ public class Lobby {
     private static final int MAX_JOUEURS = 4;
 
     private final UUID id;
-    private final Map<UUID, Heros> selectionsHeros = new LinkedHashMap<>(); // joueurId -> héros choisi
+    private final Map<UUID, Heros> selectionsHeros = new LinkedHashMap<>();
     private final Set<UUID> joueursPrets = new HashSet<>();
     private EtatLobby etatLobby = EtatLobby.LOBBY;
 
@@ -97,21 +94,28 @@ public class Lobby {
             throw new LobbyVideException();
         }
         if (!joueursPrets.containsAll(selectionsHeros.keySet())) {
-            throw new JoueurDejaPresentException();
+            throw new JoueursPasPretsException();
         }
 
         this.etatLobby = EtatLobby.ACTIVE;
     }
 
+    public synchronized void terminerLaPartie() {
+        if (etatLobby != EtatLobby.ACTIVE) {
+            throw new LobbyFermeException();
+        }
+        this.etatLobby = EtatLobby.ENDED;
+    }
+
     private void verifierLobbyEstOuvert() {
         if (etatLobby != EtatLobby.LOBBY) {
-            throw new LobbyVideException();
+            throw new LobbyFermeException();
         }
     }
 
     private void verifierJoueurPresent(UUID joueurId) {
         if (!selectionsHeros.containsKey(joueurId)) {
-            throw new JoueurDejaPresentException();
+            throw new JoueurAbsentException();
         }
     }
 }

@@ -1,7 +1,8 @@
 package lobby.infrastructure;
 
-import domain.lobby.Lobby;
-import domain.lobby.LobbyRepository;
+
+import lobby.domain.Lobby;
+import lobby.domain.LobbyRepository;
 import lobby.domain.exception.LobbyIntrouvableException;
 
 import java.util.Collection;

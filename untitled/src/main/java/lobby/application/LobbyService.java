@@ -4,8 +4,10 @@ package lobby.application;
 import domain.heros.Heros;
 import lobby.domain.Lobby;
 import lobby.domain.LobbyRepository;
+import domain.joueur.JoeurRepository; // AJOUTER (TEMPORAIRE POUR MAINTENANT)
 
 import java.util.Collection;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 /**
@@ -26,6 +28,7 @@ public class LobbyService {
         this.joueurRepository = joueurRepository;
     }
 
+
     public Lobby createLobby() {
         Lobby lobby = new Lobby(UUID.randomUUID());
         lobbyRepository.save(lobby);
@@ -42,7 +45,8 @@ public class LobbyService {
 
     public void joinLobbyWorkflow(UUID lobbyId, UUID joueurId, Heros herosSelectionne) {
         Lobby lobby = lobbyRepository.fetchById(lobbyId);
-        joueurRepository.fetchById(joueurId); // 404 si le joueur n'existe pas
+        joueurRepository.findById(joueurId)
+                .orElseThrow(() -> new NoSuchElementException("Joueur introuvable : " + joueurId)); // 404
 
         lobby.rejoindreLobby(joueurId, herosSelectionne);
         lobbyRepository.save(lobby);
@@ -50,7 +54,8 @@ public class LobbyService {
 
     public void leaveLobbyWorkflow(UUID lobbyId, UUID joueurId) {
         Lobby lobby = lobbyRepository.fetchById(lobbyId);
-        joueurRepository.fetchById(joueurId);
+        joueurRepository.findById(joueurId)
+                .orElseThrow(() -> new NoSuchElementException("Joueur introuvable : " + joueurId));
 
         lobby.quitterLobby(joueurId);
         lobbyRepository.save(lobby);
@@ -70,5 +75,12 @@ public class LobbyService {
         lobbyRepository.save(lobby);
 
         // TODO étape 4 : passer lobby.getSelectionsHeros().values() à la nouvelle Partie.
+    }
+
+    public void endMatchWorkflow(UUID lobbyId) {
+        Lobby lobby = lobbyRepository.fetchById(lobbyId);
+
+        lobby.terminerLaPartie();
+        lobbyRepository.save(lobby);
     }
 }
