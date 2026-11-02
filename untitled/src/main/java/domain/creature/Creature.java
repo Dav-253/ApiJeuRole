@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import domain.heros.autre.Nom;
 import domain.heros.autre.PointVie;
-import erreur.exception.PvInvalidException;
+import erreur.exception.CreatureInvalideException;
 
 public class Creature {
 
@@ -29,13 +29,13 @@ public class Creature {
         this.pointVie = new PointVie(pvMax, pvMax);
 
         if (classeArmure <= 0) {
-            throw new PvInvalidException("La classe d'armure doit être positive");
+            throw new CreatureInvalideException("La classe d'armure doit être positive.");
         }
         if (xp < 0) {
-            throw new PvInvalidException("L'XP ne peut pas être négatif");
+            throw new CreatureInvalideException("L'XP ne peut pas être négatif.");
         }
         if (nbDesDegats <= 0 || nbFacesDegats <= 0) {
-            throw new PvInvalidException("Les dégâts doivent être définis par au moins 1 dé");
+            throw new CreatureInvalideException("Les dégâts doivent être définis par au moins 1 dé.");
         }
 
         this.classeArmure = classeArmure;
