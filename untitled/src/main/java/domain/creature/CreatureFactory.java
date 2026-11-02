@@ -1,5 +1,7 @@
 package domain.creature;
 
+import util.DesAleatoires;
+
 public final class CreatureFactory {
 
     private CreatureFactory() {}
@@ -16,6 +18,6 @@ public final class CreatureFactory {
 
     public static Creature creerTroll() {
         return new Creature("Troll", 35, 15, 0, 300,
-                6, 2, 6, 3, new CibleAleatoire());
+                6, 2, 6, 3, new CibleAleatoire(new DesAleatoires()));
     }
 }
