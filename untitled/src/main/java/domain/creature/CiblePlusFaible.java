@@ -1,4 +1,3 @@
-// CiblePlusFaible.java (Gobelin : le héros actif avec le moins de PV)
 package domain.creature;
 
 import domain.heros.Heros;

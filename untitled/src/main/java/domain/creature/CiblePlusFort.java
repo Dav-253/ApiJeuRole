@@ -1,4 +1,3 @@
-// CiblePlusFort.java (Orc : le héros actif avec le plus de PV)
 package domain.creature;
 
 import domain.heros.Heros;

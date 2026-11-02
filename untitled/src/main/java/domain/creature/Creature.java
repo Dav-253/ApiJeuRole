@@ -76,7 +76,8 @@ public class Creature {
     public void subirDegat(int quantite) {
         pointVie.subirDegat(quantite);
     }
-        public Heros choisirCible(List<Heros> herosActifs) {
+
+    public Heros choisirCible(List<Heros> herosActifs) {
         return comportementCiblage.choisirCible(herosActifs);
     }
 }

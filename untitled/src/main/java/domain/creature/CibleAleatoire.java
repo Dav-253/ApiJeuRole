@@ -1,4 +1,3 @@
-// CibleAleatoire.java (Troll : un héros actif au hasard)
 package domain.creature;
 
 import domain.heros.Heros;

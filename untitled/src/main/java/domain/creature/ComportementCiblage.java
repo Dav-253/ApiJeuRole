@@ -1,4 +1,3 @@
-// ComportementCiblage.java
 package domain.creature;
 
 import domain.heros.Heros;
