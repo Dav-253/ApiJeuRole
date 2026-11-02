@@ -1,15 +1,15 @@
 // CiblePlusFaible.java (Gobelin : le héros actif avec le moins de PV)
 package domain.creature;
 
-import domain.hero.Hero;
+import domain.heros.Heros;
 import java.util.Comparator;
 import java.util.List;
 
 public class CiblePlusFaible implements ComportementCiblage {
     @Override
-    public Hero choisirCible(List<Hero> herosActifs) {
+    public Heros choisirCible(List<Heros> herosActifs) {
         return herosActifs.stream()
-                .min(Comparator.comparingInt(Hero::getPvActuel))
+                .min(Comparator.comparingInt(Heros::getPvActuel))
                 .orElseThrow(() -> new IllegalStateException("Aucun héros actif à cibler"));
     }
 }

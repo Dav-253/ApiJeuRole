@@ -1,10 +1,10 @@
 package domain.creature;
 
-import domain.hero.Hero;
+import domain.heros.Heros;
 import java.util.List;
 import java.util.Objects;
-import domain.hero.autre.Nom;
-import domain.hero.autre.PointVie;
+import domain.heros.autre.Nom;
+import domain.heros.autre.PointVie;
 import erreur.exception.PvInvalidException;
 
 public class Creature {
@@ -76,7 +76,7 @@ public class Creature {
     public void subirDegat(int quantite) {
         pointVie.subirDegat(quantite);
     }
-        public Hero choisirCible(List<Hero> herosActifs) {
+        public Heros choisirCible(List<Heros> herosActifs) {
         return comportementCiblage.choisirCible(herosActifs);
     }
 }

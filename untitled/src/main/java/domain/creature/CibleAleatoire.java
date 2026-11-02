@@ -1,13 +1,13 @@
 // CibleAleatoire.java (Troll : un héros actif au hasard)
 package domain.creature;
 
-import domain.hero.Hero;
+import domain.heros.Heros;
 import util.Des;
 import java.util.List;
 
 public class CibleAleatoire implements ComportementCiblage {
     @Override
-    public Hero choisirCible(List<Hero> herosActifs) {
+    public Heros choisirCible(List<Heros> herosActifs) {
         if (herosActifs.isEmpty()) {
             throw new IllegalStateException("Aucun héros actif à cibler");
         }

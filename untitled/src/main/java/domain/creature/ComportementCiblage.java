@@ -1,9 +1,9 @@
 // ComportementCiblage.java
 package domain.creature;
 
-import domain.hero.Hero;
+import domain.heros.Heros;
 import java.util.List;
 
 public interface ComportementCiblage {
-    Hero choisirCible(List<Hero> herosActifs);
+    Heros choisirCible(List<Heros> herosActifs);
 }
