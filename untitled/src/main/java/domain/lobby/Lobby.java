@@ -1,6 +1,5 @@
 package domain.lobby;
 
-import domain.heros.Heros;
 import domain.joueur.Joeur;
 
 import java.util.HashMap;

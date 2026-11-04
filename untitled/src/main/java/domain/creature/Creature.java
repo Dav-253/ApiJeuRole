@@ -1,10 +1,10 @@
 package domain.creature;
 
-import domain.heros.Heros;
+import heros.domain.Heros;
 import java.util.List;
 import java.util.Objects;
-import domain.heros.autre.Nom;
-import domain.heros.autre.PointVie;
+import heros.domain.autre.Nom;
+import heros.domain.autre.PointVie;
 import erreur.exception.CreatureInvalideException;
 
 public class Creature {

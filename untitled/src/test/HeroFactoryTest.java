@@ -1,10 +1,12 @@
-package domain.heros;
+package heros.domain;
 
-import domain.heros.autre.PointMagie;
-import domain.heros.caracteristique.TypeCaracteristique;
-import domain.heros.classe.ClasseHeros;
-import domain.heros.espece.Espece;
-import erreur.exception.NomDejaUtiliseException;
+import heros.domain.autre.PointMagie;
+import heros.domain.caracteristique.TypeCaracteristique;
+import heros.domain.classe.ClasseHeros;
+import heros.domain.espece.Espece;
+import heros.domain.exception.NomDejaUtiliseException;
+import heros.domain.inventaire.Arme;
+import heros.domain.inventaire.TypeArme;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static domain.heros.caracteristique.TypeCaracteristique.*;
+import static heros.domain.caracteristique.TypeCaracteristique.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HerosFactoryTest {
@@ -39,7 +41,7 @@ class HerosFactoryTest {
     }
 
     private Heros creer(String nom, Espece espece, ClasseHeros classe, Map<TypeCaracteristique, Integer> s) {
-        return factory.creer(proprietaire, nom, espece, classe, s);
+        return factory.creer(proprietaire, nom, espece, classe, s, new Arme(TypeArme.DAGUE));
     }
 
     @BeforeEach

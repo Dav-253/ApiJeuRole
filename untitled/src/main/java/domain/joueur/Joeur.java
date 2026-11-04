@@ -1,6 +1,6 @@
 package domain.joueur;
 
-import domain.heros.Heros;
+import heros.domain.Heros;
 
 import java.util.ArrayList;
 import java.util.List;
