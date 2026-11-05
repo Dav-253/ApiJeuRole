@@ -1,10 +1,10 @@
 package lobby.application;
 
 
-import domain.heros.Heros;
+import domain.joueur.JoeurRepository;
+import heros.domain.Heros;
 import lobby.domain.Lobby;
 import lobby.domain.LobbyRepository;
-import domain.joueur.JoeurRepository; // AJOUTER (TEMPORAIRE POUR MAINTENANT)
 
 import java.util.Collection;
 import java.util.NoSuchElementException;
@@ -15,15 +15,15 @@ import java.util.UUID;
  * ({@code CreerLobbyUseCase}, {@code RejoindreLobbyUseCase}, {@code QuitterLobbyUseCase}…),
  * chacun avec sa Command et son Output, comme dans l'exemple du prof.
  *
- * <p>Il reçoit encore un {@link domain.heros.Heros} du domaine : le use case recevra plutôt un identifiant de
+ * <p>Il reçoit encore un {@link Heros} du domaine : le use case recevra plutôt un identifiant de
  * héros et ira chercher le héros via un gateway du module héros.
  */
 public class LobbyService {
 
     private final LobbyRepository lobbyRepository;
-    private final JoueurRepository joueurRepository;
+    private final JoeurRepository joueurRepository;
 
-    public LobbyService(LobbyRepository lobbyRepository, JoueurRepository joueurRepository) {
+    public LobbyService(LobbyRepository lobbyRepository, JoeurRepository joueurRepository) {
         this.lobbyRepository = lobbyRepository;
         this.joueurRepository = joueurRepository;
     }

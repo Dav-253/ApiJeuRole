@@ -1,11 +1,9 @@
 package lobby.domain;
 
-import domain.heros.Heros;
-import domain.joueur.Joeur;
+import heros.domain.Heros;
 import lobby.domain.exception.*;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Lobby {
 

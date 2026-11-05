@@ -1,6 +1,6 @@
 package domain.creature;
 
-import domain.heros.Heros;
+import heros.domain.Heros;
 import java.util.List;
 
 public interface ComportementCiblage {

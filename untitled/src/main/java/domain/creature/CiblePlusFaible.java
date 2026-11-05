@@ -1,6 +1,6 @@
 package domain.creature;
 
-import domain.heros.Heros;
+import heros.domain.Heros;
 import erreur.exception.AucunHerosCiblableException;
 import java.util.Comparator;
 import java.util.List;

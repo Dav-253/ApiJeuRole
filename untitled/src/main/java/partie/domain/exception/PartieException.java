@@ -1,10 +1,8 @@
 package partie.domain.exception;
 
-import java.util.Set;
-import java.util.UUID;
-
-public class HerosDejaEnPartieException extends PartieException {
-    public HerosDejaEnPartieException(Set<UUID> herosIds) {
-        super("Ces héros sont déjà dans une partie en cours : " + herosIds);
+/** Racine des erreurs de règle du module partie (HTTP 422, sauf PartieIntrouvable → 404). */
+public abstract class PartieException extends RuntimeException {
+    protected PartieException(String message) {
+        super(message);
     }
 }
