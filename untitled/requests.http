@@ -1,17 +1,17 @@
 ### 0. Le serveur répond-il ?
 GET http://localhost:8080/health
 
-### 1. Créer un joueur  → 201 + Location
+### 1. Créer un apijeurole.joueur  → 201 + Location
 POST http://localhost:8080/joueurs
 
 > {% client.global.set("joueurId", response.body.id); %}
 
-### 2. Consulter ce joueur  → 200
+### 2. Consulter ce apijeurole.joueur  → 200
 GET http://localhost:8080/joueurs/{{joueurId}}
 
 ### 3. Créer un héros (Nain Guerrier)  → 201 + Location
 POST http://localhost:8080/joueurs/{{joueurId}}/heros
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 {
   "nom": "Thorin",
@@ -27,7 +27,7 @@ Content-Type: application/json
 
 ### 4. Créer un héros Mage (n'a aucune armure : "armureEquipee" absent du JSON)  → 201
 POST http://localhost:8080/joueurs/{{joueurId}}/heros
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 {
   "nom": "Eldrin",
@@ -44,7 +44,7 @@ Content-Type: application/json
 ### 5. Consulter un héros  → 200
 GET http://localhost:8080/joueurs/{{joueurId}}/heros/{{herosId}}
 
-### 6. Lister les héros du joueur  → 200
+### 6. Lister les héros du apijeurole.joueur  → 200
 GET http://localhost:8080/joueurs/{{joueurId}}/heros
 
 ### 7. Consulter l'inventaire (retient l'id de la première arme et de la première armure)  → 200
@@ -57,27 +57,27 @@ GET http://localhost:8080/joueurs/{{joueurId}}/heros/{{herosId}}/inventaire
 
 ### 8. Équiper une arme que le héros possède  → 200
 POST http://localhost:8080/joueurs/{{joueurId}}/heros/{{herosId}}/equipement/arme
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "itemId": "{{armeId}}" }
 
 ### 9. Équiper une armure que le héros possède  → 200
 POST http://localhost:8080/joueurs/{{joueurId}}/heros/{{herosId}}/equipement/armure
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "itemId": "{{armureId}}" }
 
 
-############ Lobby et partie ############
+############ Lobby et apijeurole.partie ############
 
-### 10. Un deuxième joueur  → 201
+### 10. Un deuxième apijeurole.joueur  → 201
 POST http://localhost:8080/joueurs
 
 > {% client.global.set("joueur2Id", response.body.id); %}
 
 ### 11. Son héros (Elfe Rôdeur)  → 201
 POST http://localhost:8080/joueurs/{{joueur2Id}}/heros
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 {
   "nom": "Legolas",
@@ -91,56 +91,56 @@ Content-Type: application/json
 
 > {% client.global.set("heros2Id", response.body.id); %}
 
-### 12. Créer un lobby  → 201 + Location
+### 12. Créer un apijeurole.lobby  → 201 + Location
 POST http://localhost:8080/lobbys
 
 > {% client.global.set("lobbyId", response.body.id); %}
 
-### 13. Le joueur 1 rejoint avec Thorin  → 200
+### 13. Le apijeurole.joueur 1 rejoint avec Thorin  → 200
 POST http://localhost:8080/lobbys/{{lobbyId}}/joueurs
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "joueurId": "{{joueurId}}", "herosId": "{{herosId}}" }
 
-### 14. Le joueur 2 rejoint avec Legolas  → 200
+### 14. Le apijeurole.joueur 2 rejoint avec Legolas  → 200
 POST http://localhost:8080/lobbys/{{lobbyId}}/joueurs
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "joueurId": "{{joueur2Id}}", "herosId": "{{heros2Id}}" }
 
-### 15. Consulter le lobby  → 200
+### 15. Consulter le apijeurole.lobby  → 200
 GET http://localhost:8080/lobbys/{{lobbyId}}
 
 ### 16. Lister les lobbys  → 200
 GET http://localhost:8080/lobbys
 
-### 17. Le joueur 1 change de héros pour Eldrin (son statut « prêt » serait remis à zéro)  → 200
+### 17. Le apijeurole.joueur 1 change de héros pour Eldrin (son statut « prêt » serait remis à zéro)  → 200
 PUT http://localhost:8080/lobbys/{{lobbyId}}/joueurs/{{joueurId}}/heros
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "herosId": "{{eldrinId}}" }
 
 ### 18. Les deux joueurs se déclarent prêts  → 200 (x2)
 PUT http://localhost:8080/lobbys/{{lobbyId}}/joueurs/{{joueurId}}/pret
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "pret": true }
 
 ###
 PUT http://localhost:8080/lobbys/{{lobbyId}}/joueurs/{{joueur2Id}}/pret
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "pret": true }
 
-### 19. Lancer la partie  → 201 + Location /parties/{id}
+### 19. Lancer la apijeurole.partie  → 201 + Location /parties/{id}
 POST http://localhost:8080/lobbys/{{lobbyId}}/lancement
 
 > {% client.global.set("partieId", response.body.partieId); %}
 
-### 20. Consulter la partie (groupe de 2 héros, état EXPLORATION)  → 200
+### 20. Consulter la apijeurole.partie (groupe de 2 héros, état EXPLORATION)  → 200
 GET http://localhost:8080/parties/{{partieId}}
 
-### 20b. Les rencontres de la partie : composition, expérience totale, disponibilité  → 200
+### 20b. Les rencontres de la apijeurole.partie : composition, expérience totale, disponibilité  → 200
 GET http://localhost:8080/parties/{{partieId}}/rencontres
 
 ### 20c. Commencer une rencontre : le groupe affronte la patrouille gobeline  → 201 + Location /combats/{id}
@@ -161,29 +161,29 @@ GET http://localhost:8080/combats/{{combatId}}
 #        Pour agir avec l'AUTRE héros plus tard, prendre "participantActifId" dans la réponse de 20d.
 POST http://localhost:8080/combats/{{combatId}}/heros/{{acteurId}}/fin-de-tour
 
-### 20f. La partie montre le combat actif  → 200 (etat EN_COMBAT, combatActifId)
+### 20f. La apijeurole.partie montre le combat actif  → 200 (etat EN_COMBAT, combatActifId)
 GET http://localhost:8080/parties/{{partieId}}
 
-### 21. Le héros d'un membre du groupe est consultable avec son joueur  → 200
+### 21. Le héros d'un membre du groupe est consultable avec son apijeurole.joueur  → 200
 GET http://localhost:8080/joueurs/{{joueur2Id}}/heros/{{heros2Id}}
 
-### 22. Le joueur 2 quitte un autre lobby (créer d'abord un lobby où il est)
+### 22. Le apijeurole.joueur 2 quitte un autre apijeurole.lobby (créer d'abord un apijeurole.lobby où il est)
 POST http://localhost:8080/lobbys
 
 > {% client.global.set("lobby2Id", response.body.id); %}
 
 ###
 POST http://localhost:8080/lobbys/{{lobby2Id}}/joueurs
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "joueurId": "{{joueur2Id}}", "herosId": "{{heros2Id}}" }
 
 ### Quitter  → 200
 DELETE http://localhost:8080/lobbys/{{lobby2Id}}/joueurs/{{joueur2Id}}
 
-### Il rejoint à nouveau le lobby 2 (sans se déclarer prêt : sert aux erreurs E12, E15, E16)  → 200
+### Il rejoint à nouveau le apijeurole.lobby 2 (sans se déclarer prêt : sert aux erreurs E12, E15, E16)  → 200
 POST http://localhost:8080/lobbys/{{lobby2Id}}/joueurs
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "joueurId": "{{joueur2Id}}", "herosId": "{{heros2Id}}" }
 
@@ -193,70 +193,70 @@ Content-Type: application/json
 ### E1. Joueur inconnu  → 404
 GET http://localhost:8080/joueurs/00000000-0000-0000-0000-000000000000
 
-### E2. Créer un héros pour un joueur inconnu  → 404
+### E2. Créer un héros pour un apijeurole.joueur inconnu  → 404
 POST http://localhost:8080/joueurs/00000000-0000-0000-0000-000000000000/heros
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "nom": "Fantome", "espece": "HUMAIN", "classe": "MAGE",
   "caracteristiques": { "force": 10, "dexterite": 10, "constitution": 10, "intelligence": 10, "sagesse": 10, "charisme": 10 } }
 
 ### E3. Nom déjà utilisé (même en minuscules)  → 422
 POST http://localhost:8080/joueurs/{{joueurId}}/heros
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "nom": "thorin", "espece": "HUMAIN", "classe": "MAGE",
   "caracteristiques": { "force": 10, "dexterite": 10, "constitution": 10, "intelligence": 10, "sagesse": 10, "charisme": 10 } }
 
 ### E4. Nom invalide (chiffres)  → 422
 POST http://localhost:8080/joueurs/{{joueurId}}/heros
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "nom": "Mage123", "espece": "HUMAIN", "classe": "MAGE",
   "caracteristiques": { "force": 10, "dexterite": 10, "constitution": 10, "intelligence": 10, "sagesse": 10, "charisme": 10 } }
 
 ### E5. Caractéristique hors de 3 à 18  → 422
 POST http://localhost:8080/joueurs/{{joueurId}}/heros
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "nom": "Hercule", "espece": "HUMAIN", "classe": "GUERRIER",
   "caracteristiques": { "force": 19, "dexterite": 10, "constitution": 10, "intelligence": 10, "sagesse": 10, "charisme": 10 } }
 
 ### E6. Espèce inconnue (schéma invalide)  → 400
 POST http://localhost:8080/joueurs/{{joueurId}}/heros
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "nom": "Hobbit", "espece": "HOBBIT", "classe": "MAGE",
   "caracteristiques": { "force": 10, "dexterite": 10, "constitution": 10, "intelligence": 10, "sagesse": 10, "charisme": 10 } }
 
 ### E7. Caractéristique manquante (schéma invalide)  → 400
 POST http://localhost:8080/joueurs/{{joueurId}}/heros
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "nom": "Hobbit", "espece": "HUMAIN", "classe": "MAGE",
   "caracteristiques": { "force": 10, "dexterite": 10, "constitution": 10, "intelligence": 10, "sagesse": 10 } }
 
 ### E8. Équiper un objet que le héros ne possède pas  → 422
 POST http://localhost:8080/joueurs/{{joueurId}}/heros/{{herosId}}/equipement/arme
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "itemId": "00000000-0000-0000-0000-000000000000" }
 
 ### E9. Héros inconnu  → 404
 GET http://localhost:8080/joueurs/{{joueurId}}/heros/00000000-0000-0000-0000-000000000000
 
-### E10. Amener le héros d'un autre joueur dans un lobby  → 404
+### E10. Amener le héros d'un autre apijeurole.joueur dans un apijeurole.lobby  → 404
 POST http://localhost:8080/lobbys/{{lobby2Id}}/joueurs
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "joueurId": "{{joueur2Id}}", "herosId": "{{herosId}}" }
 
-### E11. Rejoindre un lobby déjà lancé  → 422
+### E11. Rejoindre un apijeurole.lobby déjà lancé  → 422
 POST http://localhost:8080/lobbys/{{lobbyId}}/joueurs
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "joueurId": "{{joueur2Id}}", "herosId": "{{heros2Id}}" }
 
-### E12. Lancer sans que tous soient prêts (lobby 2 : le joueur 2 n'a pas dit « prêt »)  → 422
+### E12. Lancer sans que tous soient prêts (apijeurole.lobby 2 : le apijeurole.joueur 2 n'a pas dit « prêt »)  → 422
 POST http://localhost:8080/lobbys/{{lobby2Id}}/lancement
 
 ### E13. Lobby inconnu  → 404
@@ -267,23 +267,23 @@ GET http://localhost:8080/parties/00000000-0000-0000-0000-000000000000
 
 ### E15. Rejoindre sans joueurId (schéma invalide)  → 400
 POST http://localhost:8080/lobbys/{{lobby2Id}}/joueurs
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "herosId": "{{heros2Id}}" }
 
 ### E16. Joueur inconnu qui rejoint  → 404
 POST http://localhost:8080/lobbys/{{lobby2Id}}/joueurs
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "joueurId": "00000000-0000-0000-0000-000000000000", "herosId": "{{heros2Id}}" }
 
-### E17. Un joueur absent se déclare prêt  → 422
+### E17. Un apijeurole.joueur absent se déclare prêt  → 422
 PUT http://localhost:8080/lobbys/{{lobbyId}}/joueurs/00000000-0000-0000-0000-000000000000/pret
-Content-Type: application/json
+Content-Type: apijeurole.application/json
 
 { "pret": true }
 
-### E18. Les rencontres d'une partie inconnue  → 404
+### E18. Les rencontres d'une apijeurole.partie inconnue  → 404
 GET http://localhost:8080/parties/00000000-0000-0000-0000-000000000000/rencontres
 
 ### E19. Rencontre inconnue  → 404

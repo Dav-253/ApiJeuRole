@@ -26,7 +26,7 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- HTTP server + REST (only used by the api/ and config/ layers) -->
+        <!-- HTTP server + REST (only used by the api/ and apijeurole.config/ layers) -->
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-grizzly2-http</artifactId>
@@ -130,7 +130,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.1</version>
                 <configuration>
-                    <mainClass>Main</mainClass>
+                    <mainClass>apijeurole.Main</mainClass>
                 </configuration>
             </plugin>
         </plugins>
