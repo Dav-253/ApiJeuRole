@@ -1,7 +1,7 @@
 package apijeurole.lobby.application;
 
 
-import apijeurole.domain.joueur.JoeurRepository;
+import apijeurole.joueur.domain.JoueurRepository;
 import apijeurole.heros.domain.Heros;
 import apijeurole.lobby.domain.Lobby;
 import apijeurole.lobby.domain.LobbyRepository;
@@ -21,9 +21,9 @@ import java.util.UUID;
 public class LobbyService {
 
     private final LobbyRepository lobbyRepository;
-    private final JoeurRepository joueurRepository;
+    private final JoueurRepository joueurRepository;
 
-    public LobbyService(LobbyRepository lobbyRepository, JoeurRepository joueurRepository) {
+    public LobbyService(LobbyRepository lobbyRepository, JoueurRepository joueurRepository) {
         this.lobbyRepository = lobbyRepository;
         this.joueurRepository = joueurRepository;
     }
