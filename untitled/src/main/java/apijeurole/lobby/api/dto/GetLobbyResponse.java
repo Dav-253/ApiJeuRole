@@ -6,5 +6,5 @@ import java.util.UUID;
 public record GetLobbyResponse(
         UUID lobbyId,
         String etatLobby,
-        int nombreJoeursActuels,
-        List<UUID> joeursConnectes) {}
+        int nombreJoueursActuels,
+        List<UUID> joueursConnectes) {}
