@@ -1,6 +1,6 @@
 package apijeurole;
 
-import apijeurole.infrastructure.persistence.InMemoryJoeurRepository;
+import apijeurole.joueur.infrastructure.persistence.InMemoryJoueurRepository;
 import apijeurole.lobby.LobbyInstaller;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
@@ -30,7 +30,7 @@ public class Main {
         ResourceConfig config = new ResourceConfig();
 
         // Installers des modules
-        new LobbyInstaller(new InMemoryJoeurRepository()).install(config);
+        new LobbyInstaller(new InMemoryJoueurRepository()).install(config);
 
         return GrizzlyHttpServerFactory.createHttpServer(URI.create("http://localhost:" + port + "/"), config);
     }

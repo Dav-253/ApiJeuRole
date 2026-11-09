@@ -1,7 +1,7 @@
 package apijeurole.lobby;
 
 
-import apijeurole.domain.joueur.JoeurRepository;
+import apijeurole.joueur.domain.JoueurRepository;
 import apijeurole.lobby.application.LobbyService;
 import apijeurole.lobby.domain.LobbyRepository;
 import apijeurole.lobby.infrastructure.InMemoryLobbyRepository;
@@ -18,7 +18,7 @@ public class LobbyInstaller {
 
     private final LobbyService lobbyService;
 
-    public LobbyInstaller(JoeurRepository joueurRepository) {
+    public LobbyInstaller(JoueurRepository joueurRepository) {
         LobbyRepository lobbyRepository = new InMemoryLobbyRepository();
         this.lobbyService = new LobbyService(lobbyRepository, joueurRepository);
     }

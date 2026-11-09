@@ -31,7 +31,7 @@ public class Lobby {
         return selectionsHeros.size() >= MAX_JOUEURS;
     }
 
-    public synchronized int getNombreJoeurs() {
+    public synchronized int getNombreJoueurs() {
         return selectionsHeros.size();
     }
 

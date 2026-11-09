@@ -2,7 +2,7 @@ package apijeurole.heros.domain.inventaire;
 
 import apijeurole.heros.domain.autre.PointVie;
 import apijeurole.heros.domain.inventaire.item.Item;
-import apijeurole.util.Des;
+import apijeurole.commun.util.Des;
 
 public class Potion implements Item {
 
