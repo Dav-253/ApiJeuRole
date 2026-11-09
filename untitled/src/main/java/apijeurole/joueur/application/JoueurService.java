@@ -3,6 +3,7 @@ package apijeurole.joueur.application;
 import apijeurole.commun.domain.RequeteInvalideException;
 import apijeurole.joueur.domain.Joueur;
 import apijeurole.joueur.domain.JoueurRepository;
+import apijeurole.joueur.domain.exception.IdentifiantsInvalidesException;
 
 import java.util.UUID;
 
@@ -10,10 +11,13 @@ public class JoueurService {
 
     private final JoueurRepository joueurRepository;
     private final PasswordHasher passwordHasher;
+    private final GestionJetons gestionJetons;
 
-    public JoueurService(JoueurRepository joueurRepository, PasswordHasher passwordHasher) {
+    public JoueurService(JoueurRepository joueurRepository, PasswordHasher passwordHasher,
+                         GestionJetons gestionJetons) {
         this.joueurRepository = joueurRepository;
         this.passwordHasher = passwordHasher;
+        this.gestionJetons = gestionJetons;
     }
 
     public Joueur inscrire(String pseudonyme, String courriel, String motDePasse) {
@@ -27,6 +31,17 @@ public class JoueurService {
         Joueur joueur = new Joueur(UUID.randomUUID(), pseudonyme, courriel, passwordHasher.hacher(motDePasse));
         joueurRepository.save(joueur);
         return joueur;
+    }
+
+    public SessionOuverte connecter(String courriel, String motDePasse) {
+        exiger(courriel, "Le courriel est obligatoire.");
+        exiger(motDePasse, "Le mot de passe est obligatoire.");
+
+        Joueur joueur = joueurRepository.findByCourriel(courriel)
+                .filter(j -> passwordHasher.verifier(j.getMotDePasseHache(), motDePasse))
+                .orElseThrow(IdentifiantsInvalidesException::new);
+
+        return new SessionOuverte(joueur.getId(), gestionJetons.creerJeton(joueur.getId()));
     }
 
     static void exiger(String valeur, String message) {
