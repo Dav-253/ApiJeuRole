@@ -1,4 +1,3 @@
 package apijeurole.commun.api;
 
-public class ErreurReponse {
-}
+public record ErreurReponse(String error, String description) {}

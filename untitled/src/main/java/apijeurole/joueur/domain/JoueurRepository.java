@@ -6,5 +6,5 @@ import java.util.UUID;
 public interface JoueurRepository {
     void save(Joueur joueur);
     Optional<Joueur> findById(UUID id);
-    void deleteById(UUID id);
+    Optional<Joueur> findByCourriel(String courriel);
 }

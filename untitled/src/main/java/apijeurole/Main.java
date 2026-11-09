@@ -1,6 +1,10 @@
 package apijeurole;
 
-import apijeurole.joueur.infrastructure.persistence.InMemoryJoueurRepository;
+import apijeurole.commun.api.ErreurMetierMapper;
+import apijeurole.joueur.JoueurInstaller;
+import apijeurole.joueur.domain.JoueurRepository;
+import apijeurole.joueur.infrastructure.Argon2PasswordHasher;
+import apijeurole.joueur.infrastructure.InMemoryJoueurRepository;
 import apijeurole.lobby.LobbyInstaller;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
@@ -29,8 +33,13 @@ public class Main {
     public static HttpServer demarrer(int port) {
         ResourceConfig config = new ResourceConfig();
 
+        JoueurRepository joueurRepository = new InMemoryJoueurRepository();
+
+        config.register(new ErreurMetierMapper());
+
         // Installers des modules
-        new LobbyInstaller(new InMemoryJoueurRepository()).install(config);
+        new JoueurInstaller(joueurRepository, new Argon2PasswordHasher()).install(config);
+        new LobbyInstaller(joueurRepository).install(config);
 
         return GrizzlyHttpServerFactory.createHttpServer(URI.create("http://localhost:" + port + "/"), config);
     }
