@@ -17,7 +17,7 @@ class InscriptionTest {
     @BeforeEach
     void preparer() {
         repository = new InMemoryJoueurRepository();
-        service = new JoueurService(repository, new FauxPasswordHasher());
+        service = new JoueurService(repository, new FauxPasswordHasher(), new apijeurole.joueur.infrastructure.InMemoryGestionJetons());
     }
 
     @Test
