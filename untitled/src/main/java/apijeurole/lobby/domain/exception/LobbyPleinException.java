@@ -1,7 +1,9 @@
 package apijeurole.lobby.domain.exception;
 
+import apijeurole.commun.domain.CategorieErreur;
+
 public class LobbyPleinException extends LobbyException {
     public LobbyPleinException() {
-        super("Le apijeurole.lobby est plein (4 joueurs maximum).");
+        super("LOBBY_FULL", CategorieErreur.CONFLIT, "Le lobby est plein (4 joueurs maximum).");
     }
 }

@@ -1,4 +1,4 @@
-package apijeurole.heros.infrastructure.persistance;
+package apijeurole.heros.infrastructure;
 
 import apijeurole.heros.domain.Heros;
 import apijeurole.heros.domain.HerosRepository;

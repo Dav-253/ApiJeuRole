@@ -1,6 +1,8 @@
 package apijeurole;
 
 import apijeurole.commun.api.ErreurMetierMapper;
+import apijeurole.heros.domain.HerosRepository;
+import apijeurole.heros.infrastructure.InMemoryHerosRepository;
 import apijeurole.joueur.JoueurInstaller;
 import apijeurole.joueur.domain.JoueurRepository;
 import apijeurole.joueur.infrastructure.Argon2PasswordHasher;
@@ -35,12 +37,13 @@ public class Main {
         ResourceConfig config = new ResourceConfig();
 
         JoueurRepository joueurRepository = new InMemoryJoueurRepository();
+        HerosRepository herosRepository = new InMemoryHerosRepository();
 
         config.register(new ErreurMetierMapper());
 
         // Installers des modules
         new JoueurInstaller(joueurRepository, new Argon2PasswordHasher(), new InMemoryGestionJetons()).install(config);
-        new LobbyInstaller(joueurRepository).install(config);
+        new LobbyInstaller(joueurRepository, herosRepository).install(config);
 
         return GrizzlyHttpServerFactory.createHttpServer(URI.create("http://localhost:" + port + "/"), config);
     }

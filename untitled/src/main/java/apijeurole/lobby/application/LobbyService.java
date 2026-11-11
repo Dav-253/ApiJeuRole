@@ -1,86 +1,64 @@
 package apijeurole.lobby.application;
 
 
+import apijeurole.joueur.domain.Joueur;
 import apijeurole.joueur.domain.JoueurRepository;
-import apijeurole.heros.domain.Heros;
+import apijeurole.lobby.application.LobbyVue.HerosVue;
+import apijeurole.lobby.application.LobbyVue.MembreVue;
+import apijeurole.lobby.domain.EtatLobby;
+import apijeurole.lobby.domain.HerosGateway;
 import apijeurole.lobby.domain.Lobby;
 import apijeurole.lobby.domain.LobbyRepository;
+import apijeurole.lobby.domain.exception.DejaDansUnLobbyException;
 
-import java.util.Collection;
-import java.util.NoSuchElementException;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-/**
- * TEMPORAIRE — à découper à l'étape 4 en un use case par intention
- * ({@code CreerLobbyUseCase}, {@code RejoindreLobbyUseCase}, {@code QuitterLobbyUseCase}…),
- * chacun avec sa Command et son Output, comme dans l'exemple du prof.
- *
- * <p>Il reçoit encore un {@link Heros} du domaine : le use case recevra plutôt un identifiant de
- * héros et ira chercher le héros via un gateway du module héros.
- */
 public class LobbyService {
 
     private final LobbyRepository lobbyRepository;
     private final JoueurRepository joueurRepository;
+    private final HerosGateway herosGateway;
 
-    public LobbyService(LobbyRepository lobbyRepository, JoueurRepository joueurRepository) {
+    public LobbyService(LobbyRepository lobbyRepository, JoueurRepository joueurRepository,
+                        HerosGateway herosGateway) {
         this.lobbyRepository = lobbyRepository;
         this.joueurRepository = joueurRepository;
+        this.herosGateway = herosGateway;
     }
 
-
-    public Lobby createLobby() {
-        Lobby lobby = new Lobby(UUID.randomUUID());
+    /** Le joueur devient l'hôte et le premier membre. Un joueur ne peut créer un lobby que s'il n'est dans aucun lobby ouvert. */
+    public LobbyVue creerLobby(UUID joueurId) {
+        if (lobbyOuvertDe(joueurId).isPresent()) {
+            throw new DejaDansUnLobbyException();
+        }
+        Lobby lobby = Lobby.creer(UUID.randomUUID(), joueurId);
         lobbyRepository.save(lobby);
-        return lobby;
+        return vue(lobby);
     }
 
-    public Collection<Lobby> listAllLobbies() {
-        return lobbyRepository.findAll();
+    Optional<Lobby> lobbyOuvertDe(UUID joueurId) {
+        return lobbyRepository.findAll().stream()
+                .filter(l -> l.getEtat() == EtatLobby.OPEN && l.contient(joueurId))
+                .findFirst();
     }
 
-    public Lobby getLobby(UUID lobbyId) {
-        return lobbyRepository.fetchById(lobbyId);
+    LobbyVue vue(Lobby lobby) {
+        List<MembreVue> membres = lobby.getJoueursIds().stream()
+                .map(joueurId -> new MembreVue(joueurId, pseudonyme(joueurId), herosVue(lobby, joueurId)))
+                .toList();
+        return new LobbyVue(lobby.getId(), lobby.getEtat(), lobby.getHostId(), membres, lobby.placesDisponibles());
     }
 
-    public void joinLobbyWorkflow(UUID lobbyId, UUID joueurId, Heros herosSelectionne) {
-        Lobby lobby = lobbyRepository.fetchById(lobbyId);
-        joueurRepository.findById(joueurId)
-                .orElseThrow(() -> new NoSuchElementException("Joueur introuvable : " + joueurId)); // 404
-
-        lobby.rejoindreLobby(joueurId, herosSelectionne);
-        lobbyRepository.save(lobby);
+    private String pseudonyme(UUID joueurId) {
+        return joueurRepository.findById(joueurId).map(Joueur::getPseudonyme).orElse("?");
     }
 
-    public void leaveLobbyWorkflow(UUID lobbyId, UUID joueurId) {
-        Lobby lobby = lobbyRepository.fetchById(lobbyId);
-        joueurRepository.findById(joueurId)
-                .orElseThrow(() -> new NoSuchElementException("Joueur introuvable : " + joueurId));
-
-        lobby.quitterLobby(joueurId);
-        lobbyRepository.save(lobby);
-    }
-
-    public void toggleReadyWorkflow(UUID lobbyId, UUID joueurId, boolean estPret) {
-        Lobby lobby = lobbyRepository.fetchById(lobbyId);
-
-        lobby.modifierStatusPret(joueurId, estPret);
-        lobbyRepository.save(lobby);
-    }
-
-    public void startMatchWorkflow(UUID lobbyId) {
-        Lobby lobby = lobbyRepository.fetchById(lobbyId);
-
-        lobby.lancerLaPartie();
-        lobbyRepository.save(lobby);
-
-        // TODO étape 4 : passer apijeurole.lobby.getSelectionsHeros().values() à la nouvelle Partie.
-    }
-
-    public void endMatchWorkflow(UUID lobbyId) {
-        Lobby lobby = lobbyRepository.fetchById(lobbyId);
-
-        lobby.terminerLaPartie();
-        lobbyRepository.save(lobby);
+    private HerosVue herosVue(Lobby lobby, UUID joueurId) {
+        return lobby.herosDe(joueurId)
+                .flatMap(herosGateway::trouver)
+                .map(h -> new HerosVue(h.id(), h.nom()))
+                .orElse(null);
     }
 }
