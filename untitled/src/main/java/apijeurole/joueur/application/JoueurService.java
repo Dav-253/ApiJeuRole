@@ -1,9 +1,11 @@
 package apijeurole.joueur.application;
 
+import apijeurole.commun.domain.ActionInterditeException;
 import apijeurole.commun.domain.RequeteInvalideException;
 import apijeurole.joueur.domain.Joueur;
 import apijeurole.joueur.domain.JoueurRepository;
 import apijeurole.joueur.domain.exception.IdentifiantsInvalidesException;
+import apijeurole.joueur.domain.exception.JoueurIntrouvableException;
 
 import java.util.UUID;
 
@@ -42,6 +44,15 @@ public class JoueurService {
                 .orElseThrow(IdentifiantsInvalidesException::new);
 
         return new SessionOuverte(joueur.getId(), gestionJetons.creerJeton(joueur.getId()));
+    }
+
+    public Joueur consulterProfil(UUID joueurAuthentifieId, UUID joueurDemandeId) {
+        Joueur joueur = joueurRepository.findById(joueurDemandeId)
+                .orElseThrow(() -> new JoueurIntrouvableException(joueurDemandeId));
+        if (!joueur.getId().equals(joueurAuthentifieId)) {
+            throw new ActionInterditeException("Vous ne pouvez consulter que votre propre profil.");
+        }
+        return joueur;
     }
 
     static void exiger(String valeur, String message) {
