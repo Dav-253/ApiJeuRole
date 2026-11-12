@@ -10,6 +10,7 @@ import apijeurole.lobby.domain.HerosGateway;
 import apijeurole.lobby.domain.Lobby;
 import apijeurole.lobby.domain.LobbyRepository;
 import apijeurole.lobby.domain.exception.DejaDansUnLobbyException;
+import apijeurole.lobby.domain.exception.LobbyIntrouvableException;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +37,25 @@ public class LobbyService {
         Lobby lobby = Lobby.creer(UUID.randomUUID(), joueurId);
         lobbyRepository.save(lobby);
         return vue(lobby);
+    }
+
+    public List<LobbyResume> listerLobbysRejoignables() {
+        return lobbyRepository.findAll().stream()
+                .filter(Lobby::estOuvertAvecPlace)
+                .map(l -> new LobbyResume(l.getId(), l.getHostId(), l.nombreJoueurs(), Lobby.MAX_JOUEURS))
+                .toList();
+    }
+
+    public LobbyVue consulterLobby(UUID lobbyId) {
+        return vue(charger(lobbyId));
+    }
+
+    Lobby charger(UUID lobbyId) {
+        Lobby lobby = lobbyRepository.fetchById(lobbyId);
+        if (lobby.getEtat() == EtatLobby.CLOSED) {
+            throw new LobbyIntrouvableException(lobbyId);
+        }
+        return lobby;
     }
 
     Optional<Lobby> lobbyOuvertDe(UUID joueurId) {
