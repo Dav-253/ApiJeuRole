@@ -12,7 +12,7 @@ import java.util.*;
  */
 public class Lobby {
 
-    private static final int MAX_JOUEURS = 4;
+    public static final int MAX_JOUEURS = 4;
 
     private final UUID id;
     private UUID hostId;
