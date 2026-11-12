@@ -1,7 +1,9 @@
 package apijeurole.lobby.domain.exception;
 
+import apijeurole.commun.domain.CategorieErreur;
+
 public class JoueurAbsentException extends LobbyException {
     public JoueurAbsentException() {
-        super("Ce apijeurole.joueur n'est pas présent dans le apijeurole.lobby.");
+        super("PLAYER_NOT_IN_LOBBY", CategorieErreur.INTROUVABLE, "Ce joueur n'est pas membre de ce lobby.");
     }
 }

@@ -5,115 +5,68 @@ import apijeurole.lobby.domain.exception.*;
 
 import java.util.*;
 
+
+/**
+ * Un lobby accueille au plus 4 joueurs. Son créateur en est l'hôte. Les membres sont gardés dans
+ * leur ordre d'arrivée ; chacun a, ou non, un héros sélectionné (on ne garde que l'identifiant).
+ */
 public class Lobby {
 
     private static final int MAX_JOUEURS = 4;
 
     private final UUID id;
-    private final Map<UUID, Heros> selectionsHeros = new LinkedHashMap<>();
-    private final Set<UUID> joueursPrets = new HashSet<>();
-    private EtatLobby etatLobby = EtatLobby.LOBBY;
+    private UUID hostId;
+    private EtatLobby etat = EtatLobby.OPEN;
+    private final Map<UUID, UUID> herosParJoueur = new LinkedHashMap<>();
 
 
-    public Lobby(UUID id) {
-        this.id = Objects.requireNonNull(id, "L'identifiant du apijeurole.lobby est obligatoire.");
+    public Lobby(UUID id, UUID hostId) {
+        this.id = Objects.requireNonNull(id, "L'identifiant du lobby est obligatoire.");
+        this.hostId = Objects.requireNonNull(hostId, "L'hôte est obligatoire.");
+    }
+
+    public static Lobby creer(UUID id, UUID hostId) {
+        Lobby lobby = new Lobby(id, hostId);
+        lobby.herosParJoueur.put(hostId, null);
+        return lobby;
     }
 
     public UUID getId() {
         return id;
     }
 
-    public synchronized EtatLobby getEtatLobby() {
-        return etatLobby;
+    public synchronized UUID getHostId() {
+        return hostId;
     }
 
-    public synchronized boolean lobbyEstPlein() {
-        return selectionsHeros.size() >= MAX_JOUEURS;
-    }
-
-    public synchronized int getNombreJoueurs() {
-        return selectionsHeros.size();
+    public synchronized EtatLobby getEtat() {
+        return etat;
     }
 
     public synchronized List<UUID> getJoueursIds() {
-        return new ArrayList<>(selectionsHeros.keySet());
+        return new ArrayList<>(herosParJoueur.keySet());
     }
 
-    public synchronized boolean jouerEstPret(UUID joueurId) {
-        return joueursPrets.contains(joueurId);
+    public synchronized boolean contient(UUID joueurId) {
+        return herosParJoueur.containsKey(joueurId);
     }
 
-    public synchronized Map<UUID, Heros> getSelectionsHeros() {
-        return Collections.unmodifiableMap(new LinkedHashMap<>(selectionsHeros));
+    public synchronized Optional<UUID> herosDe(UUID joueurId) {
+        return Optional.ofNullable(herosParJoueur.get(joueurId));
     }
 
-    public synchronized void rejoindreLobby(UUID joueurId, Heros heros) {
-        Objects.requireNonNull(joueurId, "Le apijeurole.joueur est obligatoire.");
-        Objects.requireNonNull(heros, "Le héros est obligatoire.");
-
-        verifierLobbyEstOuvert();
-
-        if (selectionsHeros.containsKey(joueurId)) {
-            throw new JoueurDejaPresentException();
-        }
-        if (lobbyEstPlein()) {
-            throw new LobbyPleinException();
-        }
-        if (!heros.getProprietaireId().equals(joueurId)) {
-            throw new HerosNonAutoriseException();
-        }
-
-        selectionsHeros.put(joueurId, heros);
+    public synchronized int nombreJoueurs() {
+        return herosParJoueur.size();
     }
 
-    public synchronized void quitterLobby(UUID joueurId) {
-        verifierLobbyEstOuvert();
-        verifierJoueurPresent(joueurId);
-
-        selectionsHeros.remove(joueurId);
-        joueursPrets.remove(joueurId);
+    public synchronized int placesDisponibles() {
+        return MAX_JOUEURS - herosParJoueur.size();
     }
 
-    public synchronized void modifierStatusPret(UUID joueurId, boolean estPret) {
-        verifierLobbyEstOuvert();
-        verifierJoueurPresent(joueurId);
-
-        if (estPret) {
-            joueursPrets.add(joueurId);
-        } else  {
-            joueursPrets.remove(joueurId);
-        }
+    /** Un lobby qui apparaît dans la liste : ouvert et avec de la place. */
+    public synchronized boolean estOuvertAvecPlace() {
+        return etat == EtatLobby.OPEN && herosParJoueur.size() < MAX_JOUEURS;
     }
 
-    public synchronized void lancerLaPartie() {
-        verifierLobbyEstOuvert();
 
-        if (selectionsHeros.isEmpty()) {
-            throw new LobbyVideException();
-        }
-        if (!joueursPrets.containsAll(selectionsHeros.keySet())) {
-            throw new JoueursPasPretsException();
-        }
-
-        this.etatLobby = EtatLobby.ACTIVE;
-    }
-
-    public synchronized void terminerLaPartie() {
-        if (etatLobby != EtatLobby.ACTIVE) {
-            throw new LobbyFermeException();
-        }
-        this.etatLobby = EtatLobby.ENDED;
-    }
-
-    private void verifierLobbyEstOuvert() {
-        if (etatLobby != EtatLobby.LOBBY) {
-            throw new LobbyFermeException();
-        }
-    }
-
-    private void verifierJoueurPresent(UUID joueurId) {
-        if (!selectionsHeros.containsKey(joueurId)) {
-            throw new JoueurAbsentException();
-        }
-    }
 }

@@ -1,4 +1,4 @@
-package apijeurole.lobby.api.dto;
+package apijeurole.lobby.api;
 
 import apijeurole.commun.api.Authentification;
 import apijeurole.lobby.application.LobbyService;

@@ -1,5 +1,6 @@
 package apijeurole.lobby.application;
 
+
 import apijeurole.joueur.domain.Joueur;
 import apijeurole.joueur.domain.JoueurRepository;
 import apijeurole.lobby.application.LobbyVue.HerosVue;
@@ -38,7 +39,6 @@ public class LobbyService {
         return vue(lobby);
     }
 
-    /** Lobbys ouverts qui ont encore de la place. Un lobby plein, lancé ou fermé n'apparaît pas. */
     public List<LobbyResume> listerLobbysRejoignables() {
         return lobbyRepository.findAll().stream()
                 .filter(Lobby::estOuvertAvecPlace)
@@ -50,7 +50,6 @@ public class LobbyService {
         return vue(charger(lobbyId));
     }
 
-    /** Un lobby fermé (dernier joueur parti) disparaît : il est introuvable. */
     Lobby charger(UUID lobbyId) {
         Lobby lobby = lobbyRepository.fetchById(lobbyId);
         if (lobby.getEtat() == EtatLobby.CLOSED) {
