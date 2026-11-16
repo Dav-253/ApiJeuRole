@@ -1,5 +1,4 @@
 package apijeurole.lobby.api;
-
 import apijeurole.commun.api.Authentification;
 import apijeurole.lobby.application.LobbyService;
 import apijeurole.lobby.application.LobbyVue;
@@ -12,21 +11,16 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
-
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
-
 @Path("/lobbies")
 @Produces(MediaType.APPLICATION_JSON)
 public class LobbyResource {
-
     private final LobbyService lobbyService;
-
     public LobbyResource(LobbyService lobbyService) {
         this.lobbyService = lobbyService;
     }
-
     @POST
     public Response creer(@Context SecurityContext contexte) {
         LobbyVue lobby = lobbyService.creerLobby(Authentification.joueurId(contexte));
@@ -34,15 +28,22 @@ public class LobbyResource {
                 .entity(LobbyResponse.de(lobby))
                 .build();
     }
-
     @GET
     public List<LobbyResumeResponse> lister() {
         return lobbyService.listerLobbysRejoignables().stream().map(LobbyResumeResponse::de).toList();
     }
-
     @GET
     @Path("{lobbyId}")
     public LobbyResponse consulter(@PathParam("lobbyId") UUID lobbyId) {
         return LobbyResponse.de(lobbyService.consulterLobby(lobbyId));
+    }
+    @POST
+    @Path("{lobbyId}/players")
+    public Response rejoindre(@PathParam("lobbyId") UUID lobbyId, @Context SecurityContext contexte) {
+        UUID joueurId = Authentification.joueurId(contexte);
+        LobbyVue lobby = lobbyService.rejoindreLobby(lobbyId, joueurId);
+        return Response.created(URI.create("/lobbies/" + lobbyId + "/players/" + joueurId))
+                .entity(LobbyResponse.de(lobby))
+                .build();
     }
 }
