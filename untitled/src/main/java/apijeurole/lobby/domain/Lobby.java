@@ -1,5 +1,6 @@
 package apijeurole.lobby.domain;
 import apijeurole.lobby.domain.exception.DejaDansUnLobbyException;
+import apijeurole.lobby.domain.exception.JoueurAbsentException;
 import apijeurole.lobby.domain.exception.JoueurDejaPresentException;
 import apijeurole.lobby.domain.exception.LobbyIntrouvableException;
 import apijeurole.lobby.domain.exception.LobbyPleinException;
@@ -78,6 +79,25 @@ public class Lobby {
             throw new DejaDansUnLobbyException();
         }
         herosParJoueur.put(joueurId, null);
+    }
+    /**
+     * Retire un joueur (et son héros sélectionné). Si l'hôte part, le joueur arrivé le plus tôt devient
+     * l'hôte. Quand le dernier joueur part, le lobby est fermé.
+     *
+     * @throws PartieDejaLanceeException après le lancement de la partie
+     * @throws JoueurAbsentException     si le joueur n'est pas membre
+     */
+    public synchronized void quitter(UUID joueurId) {
+        verifierOuvert();
+        if (!herosParJoueur.containsKey(joueurId)) {
+            throw new JoueurAbsentException();
+        }
+        herosParJoueur.remove(joueurId);
+        if (herosParJoueur.isEmpty()) {
+            etat = EtatLobby.CLOSED;
+        } else if (joueurId.equals(hostId)) {
+            hostId = herosParJoueur.keySet().iterator().next();
+        }
     }
     /** @throws PartieDejaLanceeException si la partie est lancée ; un lobby fermé est introuvable */
     private void verifierOuvert() {

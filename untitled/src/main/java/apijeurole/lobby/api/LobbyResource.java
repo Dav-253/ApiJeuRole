@@ -2,6 +2,7 @@ package apijeurole.lobby.api;
 import apijeurole.commun.api.Authentification;
 import apijeurole.lobby.application.LobbyService;
 import apijeurole.lobby.application.LobbyVue;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -45,5 +46,14 @@ public class LobbyResource {
         return Response.created(URI.create("/lobbies/" + lobbyId + "/players/" + joueurId))
                 .entity(LobbyResponse.de(lobby))
                 .build();
+    }
+    /** Un joueur ne peut retirer que lui-même : sinon 403 FORBIDDEN. */
+    @DELETE
+    @Path("{lobbyId}/players/{playerId}")
+    public Response quitter(@PathParam("lobbyId") UUID lobbyId, @PathParam("playerId") UUID playerId,
+                            @Context SecurityContext contexte) {
+        Authentification.exigerMemeJoueur(contexte, playerId);
+        lobbyService.quitterLobby(lobbyId, playerId);
+        return Response.noContent().build();
     }
 }

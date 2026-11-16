@@ -47,6 +47,11 @@ public class LobbyService {
         lobbyRepository.save(lobby);
         return vue(lobby);
     }
+    public void quitterLobby(UUID lobbyId, UUID joueurId) {
+        Lobby lobby = charger(lobbyId);
+        lobby.quitter(joueurId);
+        lobbyRepository.save(lobby);
+    }
     public LobbyVue consulterLobby(UUID lobbyId) {
         return vue(charger(lobbyId));
     }
