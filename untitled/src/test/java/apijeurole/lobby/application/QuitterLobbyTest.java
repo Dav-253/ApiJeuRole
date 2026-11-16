@@ -14,7 +14,7 @@ class QuitterLobbyTest extends LobbyServiceTestBase {
     private UUID lobbyId;
     @BeforeEach
     void preparer() {
-        service = new LobbyService(new InMemoryLobbyRepository(), joueurs, herosGateway);
+        service = new LobbyService(new InMemoryLobbyRepository(), joueurs, herosGateway, parties);
         aria = nouveauJoueur("Aria");
         bram = nouveauJoueur("Bram");
         cora = nouveauJoueur("Cora");

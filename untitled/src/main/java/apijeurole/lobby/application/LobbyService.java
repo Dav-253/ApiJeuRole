@@ -1,4 +1,5 @@
 package apijeurole.lobby.application;
+import apijeurole.commun.domain.ActionInterditeException;
 import apijeurole.joueur.domain.Joueur;
 import apijeurole.joueur.domain.JoueurRepository;
 import apijeurole.lobby.application.LobbyVue.HerosVue;
@@ -8,19 +9,25 @@ import apijeurole.lobby.domain.HerosGateway;
 import apijeurole.lobby.domain.Lobby;
 import apijeurole.lobby.domain.LobbyRepository;
 import apijeurole.lobby.domain.exception.DejaDansUnLobbyException;
+import apijeurole.lobby.domain.exception.HerosEnPartieException;
+import apijeurole.lobby.domain.exception.HerosIntrouvableException;
 import apijeurole.lobby.domain.exception.LobbyIntrouvableException;
+import apijeurole.partie.domain.PartieRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 public class LobbyService {
     private final LobbyRepository lobbyRepository;
     private final JoueurRepository joueurRepository;
     private final HerosGateway herosGateway;
+    private final PartieRepository partieRepository;
     public LobbyService(LobbyRepository lobbyRepository, JoueurRepository joueurRepository,
-                        HerosGateway herosGateway) {
+                        HerosGateway herosGateway, PartieRepository partieRepository) {
         this.lobbyRepository = lobbyRepository;
         this.joueurRepository = joueurRepository;
         this.herosGateway = herosGateway;
+        this.partieRepository = partieRepository;
     }
     /** Le joueur devient l'hôte et le premier membre. Un joueur ne peut créer un lobby que s'il n'est dans aucun lobby ouvert. */
     public LobbyVue creerLobby(UUID joueurId) {
@@ -51,6 +58,25 @@ public class LobbyService {
         Lobby lobby = charger(lobbyId);
         lobby.quitter(joueurId);
         lobbyRepository.save(lobby);
+    }
+    /**
+     * Le joueur choisit un de ses héros. Un nouveau choix remplace le précédent. Un héros déjà engagé
+     * dans une partie en cours ne peut pas être choisi.
+     */
+    public LobbyVue choisirHeros(UUID lobbyId, UUID joueurId, UUID herosId) {
+        Lobby lobby = charger(lobbyId);
+        HerosGateway.HerosResume heros = herosGateway.trouver(herosId)
+                .orElseThrow(() -> new HerosIntrouvableException(herosId));
+        if (!heros.proprietaireId().equals(joueurId)) {
+            throw new ActionInterditeException("Ce héros n'appartient pas à ce joueur.");
+        }
+        lobby.verifierPeutChoisirHeros(joueurId);
+        if (partieRepository.herosDejaEnPartieEnCours(Set.of(herosId)).contains(herosId)) {
+            throw new HerosEnPartieException();
+        }
+        lobby.choisirHeros(joueurId, herosId);
+        lobbyRepository.save(lobby);
+        return vue(lobby);
     }
     public LobbyVue consulterLobby(UUID lobbyId) {
         return vue(charger(lobbyId));
