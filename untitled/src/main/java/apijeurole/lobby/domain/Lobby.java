@@ -99,6 +99,23 @@ public class Lobby {
             hostId = herosParJoueur.keySet().iterator().next();
         }
     }
+    /**
+     * Le joueur choisit son héros ; un nouveau choix remplace le précédent.
+     *
+     * @throws PartieDejaLanceeException après le lancement de la partie
+     * @throws JoueurAbsentException     si le joueur n'est pas membre
+     */
+    public synchronized void choisirHeros(UUID joueurId, UUID herosId) {
+        Objects.requireNonNull(herosId, "Le héros est obligatoire.");
+        verifierPeutChoisirHeros(joueurId);
+        herosParJoueur.put(joueurId, herosId);
+    }
+    public synchronized void verifierPeutChoisirHeros(UUID joueurId) {
+        verifierOuvert();
+        if (!herosParJoueur.containsKey(joueurId)) {
+            throw new JoueurAbsentException();
+        }
+    }
     /** @throws PartieDejaLanceeException si la partie est lancée ; un lobby fermé est introuvable */
     private void verifierOuvert() {
         if (etat == EtatLobby.STARTED) {

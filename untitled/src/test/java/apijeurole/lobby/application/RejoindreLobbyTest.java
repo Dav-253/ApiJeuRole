@@ -12,7 +12,7 @@ class RejoindreLobbyTest extends LobbyServiceTestBase {
     private LobbyVue lobby;
     @BeforeEach
     void preparer() {
-        service = new LobbyService(new InMemoryLobbyRepository(), joueurs, herosGateway);
+        service = new LobbyService(new InMemoryLobbyRepository(), joueurs, herosGateway, parties);
         aria = nouveauJoueur("Aria");
         lobby = service.creerLobby(aria.getId());
     }
