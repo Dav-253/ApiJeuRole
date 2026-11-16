@@ -1,6 +1,4 @@
 package apijeurole.lobby.application;
-
-
 import apijeurole.joueur.domain.Joueur;
 import apijeurole.joueur.domain.JoueurRepository;
 import apijeurole.lobby.application.LobbyVue.HerosVue;
@@ -11,24 +9,19 @@ import apijeurole.lobby.domain.Lobby;
 import apijeurole.lobby.domain.LobbyRepository;
 import apijeurole.lobby.domain.exception.DejaDansUnLobbyException;
 import apijeurole.lobby.domain.exception.LobbyIntrouvableException;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 public class LobbyService {
-
     private final LobbyRepository lobbyRepository;
     private final JoueurRepository joueurRepository;
     private final HerosGateway herosGateway;
-
     public LobbyService(LobbyRepository lobbyRepository, JoueurRepository joueurRepository,
                         HerosGateway herosGateway) {
         this.lobbyRepository = lobbyRepository;
         this.joueurRepository = joueurRepository;
         this.herosGateway = herosGateway;
     }
-
     /** Le joueur devient l'hôte et le premier membre. Un joueur ne peut créer un lobby que s'il n'est dans aucun lobby ouvert. */
     public LobbyVue creerLobby(UUID joueurId) {
         if (lobbyOuvertDe(joueurId).isPresent()) {
@@ -38,18 +31,26 @@ public class LobbyService {
         lobbyRepository.save(lobby);
         return vue(lobby);
     }
-
+    /** Lobbys ouverts qui ont encore de la place. Un lobby plein, lancé ou fermé n'apparaît pas. */
     public List<LobbyResume> listerLobbysRejoignables() {
         return lobbyRepository.findAll().stream()
                 .filter(Lobby::estOuvertAvecPlace)
                 .map(l -> new LobbyResume(l.getId(), l.getHostId(), l.nombreJoueurs(), Lobby.MAX_JOUEURS))
                 .toList();
     }
-
+    public LobbyVue rejoindreLobby(UUID lobbyId, UUID joueurId) {
+        Lobby lobby = charger(lobbyId);
+        boolean dansUnAutreLobby = lobbyOuvertDe(joueurId)
+                .filter(autre -> !autre.getId().equals(lobbyId))
+                .isPresent();
+        lobby.rejoindre(joueurId, dansUnAutreLobby);
+        lobbyRepository.save(lobby);
+        return vue(lobby);
+    }
     public LobbyVue consulterLobby(UUID lobbyId) {
         return vue(charger(lobbyId));
     }
-
+    /** Un lobby fermé (dernier joueur parti) disparaît : il est introuvable. */
     Lobby charger(UUID lobbyId) {
         Lobby lobby = lobbyRepository.fetchById(lobbyId);
         if (lobby.getEtat() == EtatLobby.CLOSED) {
@@ -57,24 +58,20 @@ public class LobbyService {
         }
         return lobby;
     }
-
     Optional<Lobby> lobbyOuvertDe(UUID joueurId) {
         return lobbyRepository.findAll().stream()
                 .filter(l -> l.getEtat() == EtatLobby.OPEN && l.contient(joueurId))
                 .findFirst();
     }
-
     LobbyVue vue(Lobby lobby) {
         List<MembreVue> membres = lobby.getJoueursIds().stream()
                 .map(joueurId -> new MembreVue(joueurId, pseudonyme(joueurId), herosVue(lobby, joueurId)))
                 .toList();
         return new LobbyVue(lobby.getId(), lobby.getEtat(), lobby.getHostId(), membres, lobby.placesDisponibles());
     }
-
     private String pseudonyme(UUID joueurId) {
         return joueurRepository.findById(joueurId).map(Joueur::getPseudonyme).orElse("?");
     }
-
     private HerosVue herosVue(Lobby lobby, UUID joueurId) {
         return lobby.herosDe(joueurId)
                 .flatMap(herosGateway::trouver)
