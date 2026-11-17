@@ -3,6 +3,7 @@ import apijeurole.commun.api.Authentification;
 import apijeurole.commun.domain.RequeteInvalideException;
 import apijeurole.lobby.application.LobbyService;
 import apijeurole.lobby.application.LobbyVue;
+import apijeurole.lobby.application.PartieLancee;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -77,5 +78,14 @@ public class LobbyResource {
         } catch (IllegalArgumentException e) {
             throw new RequeteInvalideException("Le champ heroId n'est pas un identifiant valide.");
         }
+    }
+    /** Seul l'hôte peut lancer la partie. */
+    @POST
+    @Path("{lobbyId}/game")
+    public Response lancerPartie(@PathParam("lobbyId") UUID lobbyId, @Context SecurityContext contexte) {
+        PartieLancee partie = lobbyService.lancerPartie(lobbyId, Authentification.joueurId(contexte));
+        return Response.created(URI.create("/games/" + partie.id()))
+                .entity(PartieLanceeResponse.de(partie))
+                .build();
     }
 }
