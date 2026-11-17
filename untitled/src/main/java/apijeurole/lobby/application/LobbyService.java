@@ -12,8 +12,12 @@ import apijeurole.lobby.domain.exception.DejaDansUnLobbyException;
 import apijeurole.lobby.domain.exception.HerosEnPartieException;
 import apijeurole.lobby.domain.exception.HerosIntrouvableException;
 import apijeurole.lobby.domain.exception.LobbyIntrouvableException;
+import apijeurole.partie.domain.MembreGroupe;
+import apijeurole.partie.domain.Partie;
 import apijeurole.partie.domain.PartieRepository;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -77,6 +81,31 @@ public class LobbyService {
         lobby.choisirHeros(joueurId, herosId);
         lobbyRepository.save(lobby);
         return vue(lobby);
+    }
+    /**
+     * L'hôte lance la partie : le groupe est formé exactement des héros sélectionnés. Le lobby passe
+     * à STARTED et ne peut plus changer.
+     */
+    public PartieLancee lancerPartie(UUID lobbyId, UUID demandeurId) {
+        Lobby lobby = charger(lobbyId);
+        lobby.verifierPeutLancer(demandeurId);
+        Map<UUID, UUID> selections = lobby.selections();
+        if (!partieRepository.herosDejaEnPartieEnCours(selections.values()).isEmpty()) {
+            throw new HerosEnPartieException();
+        }
+        List<MembreGroupe> groupe = new ArrayList<>();
+        List<PartieLancee.HerosEngage> heros = new ArrayList<>();
+        selections.forEach((joueurId, herosId) -> {
+            String nom = herosGateway.trouver(herosId)
+                    .orElseThrow(() -> new HerosIntrouvableException(herosId)).nom();
+            groupe.add(new MembreGroupe(joueurId, herosId));
+            heros.add(new PartieLancee.HerosEngage(herosId, nom, joueurId));
+        });
+        Partie partie = new Partie(UUID.randomUUID(), lobbyId, groupe);
+        lobby.lancer(demandeurId);
+        partieRepository.save(partie);
+        lobbyRepository.save(lobby);
+        return new PartieLancee(partie.getId(), lobbyId, heros);
     }
     public LobbyVue consulterLobby(UUID lobbyId) {
         return vue(charger(lobbyId));
