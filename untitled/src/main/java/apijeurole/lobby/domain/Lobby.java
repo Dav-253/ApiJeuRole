@@ -2,6 +2,8 @@ package apijeurole.lobby.domain;
 import apijeurole.lobby.domain.exception.DejaDansUnLobbyException;
 import apijeurole.lobby.domain.exception.JoueurAbsentException;
 import apijeurole.lobby.domain.exception.JoueurDejaPresentException;
+import apijeurole.lobby.domain.exception.JoueursPasPretsException;
+import apijeurole.lobby.domain.exception.PasHoteException;
 import apijeurole.lobby.domain.exception.LobbyIntrouvableException;
 import apijeurole.lobby.domain.exception.LobbyPleinException;
 import apijeurole.lobby.domain.exception.PartieDejaLanceeException;
@@ -115,6 +117,28 @@ public class Lobby {
         if (!herosParJoueur.containsKey(joueurId)) {
             throw new JoueurAbsentException();
         }
+    }
+    /** Choix de chaque membre dans l'ordre d'arrivée (la valeur est null tant qu'il n'a pas choisi). */
+    public synchronized Map<UUID, UUID> selections() {
+        return new LinkedHashMap<>(herosParJoueur);
+    }
+    /**
+     * Ordre des vérifications : seul l'hôte lance (NOT_HOST), la partie ne doit pas être déjà lancée
+     * (GAME_ALREADY_STARTED), chaque membre doit avoir sélectionné un héros (PLAYERS_NOT_READY).
+     */
+    public synchronized void verifierPeutLancer(UUID demandeurId) {
+        if (!hostId.equals(demandeurId)) {
+            throw new PasHoteException();
+        }
+        verifierOuvert();
+        if (herosParJoueur.containsValue(null)) {
+            throw new JoueursPasPretsException();
+        }
+    }
+    /** Après le lancement, plus personne ne peut rejoindre, quitter ou changer de héros. */
+    public synchronized void lancer(UUID demandeurId) {
+        verifierPeutLancer(demandeurId);
+        etat = EtatLobby.STARTED;
     }
     /** @throws PartieDejaLanceeException si la partie est lancée ; un lobby fermé est introuvable */
     private void verifierOuvert() {

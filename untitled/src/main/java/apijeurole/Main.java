@@ -10,6 +10,7 @@ import apijeurole.joueur.infrastructure.Argon2PasswordHasher;
 import apijeurole.joueur.infrastructure.InMemoryGestionJetons;
 import apijeurole.joueur.infrastructure.InMemoryJoueurRepository;
 import apijeurole.lobby.LobbyInstaller;
+import apijeurole.partie.PartieInstaller;
 import apijeurole.partie.domain.PartieRepository;
 import apijeurole.partie.infrastructure.InMemoryPartieRepository;
 import apijeurole.partie.infrastructure.PartiePersistenceMapper;
@@ -40,6 +41,7 @@ public class Main {
         new JoueurInstaller(joueurRepository, new Argon2PasswordHasher(), new InMemoryGestionJetons()).install(config);
         config.register(new HerosResource(new HerosService(herosRepository)));
         new LobbyInstaller(joueurRepository, herosRepository, partieRepository).install(config);
+        new PartieInstaller(partieRepository).install(config);
         return GrizzlyHttpServerFactory.createHttpServer(URI.create("http://localhost:" + port + "/"), config);
     }
     private static int lirePort() {
